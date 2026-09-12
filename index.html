@@ -64,7 +64,7 @@ body{
 }
 h1,h2,h3,.mincho{font-family:"Shippori Mincho", serif;}
 #app{max-width:920px;margin:0 auto;padding:0 18px 60px;}
-button{font-family:inherit;}
+button{font-family:inherit;color:inherit;}
 .tabular{font-variant-numeric:tabular-nums;}
 
 /* ---- top bar ---- */
@@ -400,7 +400,7 @@ function selectItems(catKey, sub, strategy, count){
 var state = { screen:'home' };
 
 function go(screen, params){
-  state = Object.assign({screen:screen}, params||{});
+  state = Object.assign({}, params||{}, {screen:screen});
   render();
   window.scrollTo(0,0);
 }
@@ -414,6 +414,7 @@ function render(){
   if(state.screen==='quiz') return renderQuiz(app);
   if(state.screen==='quizResult') return renderQuizResult(app);
   if(state.screen==='print') return renderPrintConfig(app);
+  if(state.screen==='backup') return renderBackup(app);
   app.innerHTML='';
 }
 
@@ -431,11 +432,65 @@ function renderHome(app){
   }).join('');
 
   app.innerHTML =
-    '<div class="topbar"><div class="brand"><span class="mark">ことのはノート</span><span class="sub">国語 学習アプリ</span></div></div>'+
+    '<div class="topbar"><div class="brand"><span class="mark">ことのはノート</span><span class="sub">国語 学習アプリ</span></div><button class="icon-btn ghost" data-action="openBackup" style="font-size:12px;">⚙ 記録のバックアップ</button></div>'+
     '<div class="section-title">カテゴリを選ぶ</div>'+
     '<div class="grid">'+cards+'</div>';
 
   attachDelegation(app);
+}
+
+/* ===================== BACKUP / RESTORE ===================== */
+var ALL_DOC_IDS = ['kanji-reading','kanji-meaning','kanji-writing','kotowaza','yoji','taigigo','ruigigo'];
+function renderBackup(app){
+  app.innerHTML =
+    '<div class="topbar"><div class="crumb"><button data-action="goHome">ホーム</button><span>›</span><span>記録のバックアップ</span></div></div>'+
+    '<div class="form-block"><h4>この端末に保存されている学習記録</h4>'+
+      '<div style="font-size:13px;color:var(--ink-soft);line-height:1.8;">この画面のブラウザ（Safariなど）だけに保存されています。機種変更やSafariのデータ消去にそなえて、ときどき書き出しておくと安心です。</div>'+
+    '</div>'+
+    '<div class="form-block"><h4>書き出す（バックアップを保存）</h4>'+
+      '<div style="font-size:13px;color:var(--ink-soft);margin-bottom:10px;">ボタンを押すとファイルが作られます。「ファイル」アプリなどに保存しておいてください。</div>'+
+      '<button class="icon-btn accent" data-action="exportBackup">バックアップを書き出す</button>'+
+    '</div>'+
+    '<div class="form-block"><h4>読み込む（バックアップを復元）</h4>'+
+      '<div style="font-size:13px;color:var(--ink-soft);margin-bottom:10px;">以前書き出したファイルを選ぶと、今の記録に上書きされます。</div>'+
+      '<input type="file" accept="application/json" id="restoreFileInput" data-action="restoreFilePick">'+
+    '</div>'+
+    '<div id="backupMsg" style="font-size:13px;color:var(--good);"></div>';
+  attachDelegation(app);
+}
+function exportBackupNow(){
+  var out = {};
+  ALL_DOC_IDS.forEach(function(id){ out[id] = PROGRESS[id] || {items:{}}; });
+  var blob = new Blob([JSON.stringify(out)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var d = new Date();
+  var fname = 'kotonoha-backup-'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'.json';
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+}
+function restoreBackupFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var obj = JSON.parse(reader.result);
+      ALL_DOC_IDS.forEach(function(id){
+        if(obj[id] && obj[id].items){
+          PROGRESS[id] = obj[id];
+          PROGRESS_LOADED[id] = true;
+          try{ localStorage.setItem(LS_PREFIX+id, JSON.stringify(PROGRESS[id])); }catch(e){}
+          if(db){ db.doc('progress/'+id).set(PROGRESS[id]).catch(function(){}); }
+        }
+      });
+      var msg = document.getElementById('backupMsg');
+      if(msg) msg.textContent = '復元しました。ホームに戻って確認してください。';
+    }catch(e){
+      var msg2 = document.getElementById('backupMsg');
+      if(msg2){ msg2.style.color='var(--bad)'; msg2.textContent = 'ファイルの読み込みに失敗しました。'; }
+    }
+  };
+  reader.readAsText(file);
 }
 
 /* ===================== CATEGORY ===================== */
@@ -851,6 +906,10 @@ document.addEventListener('click', function(e){
     Object.keys(state.marks||{}).forEach(function(id){ recordResult(docId2, id, state.marks[id]===1); });
     go('category', {cat:state.cat}); return;
   }
+
+  /* backup */
+  if(action==='openBackup'){ go('backup', {}); return; }
+  if(action==='exportBackup'){ exportBackupNow(); return; }
 });
 
 document.addEventListener('input', function(e){
@@ -859,6 +918,10 @@ document.addEventListener('input', function(e){
 });
 document.addEventListener('change', function(e){
   if(e.target.dataset && e.target.dataset.action==='studyFilter'){ state.filter = e.target.value; state.idx=0; state._studyList=null; render(); }
+  if(e.target.dataset && e.target.dataset.action==='restoreFilePick'){
+    var f = e.target.files && e.target.files[0];
+    if(f) restoreBackupFile(f);
+  }
 });
 
 /* patch render() to add print/grade screens */
@@ -873,6 +936,7 @@ render = function(){
   if(state.screen==='quizResult') return renderQuizResult(app);
   if(state.screen==='print') return renderPrintConfig(app);
   if(state.screen==='grade') return renderGrade(app);
+  if(state.screen==='backup') return renderBackup(app);
   app.innerHTML='';
 };
 
