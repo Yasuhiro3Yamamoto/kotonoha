@@ -1,0 +1,907 @@
+<title>ことのはノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --paper:#faf6ec;
+  --paper-2:#f2ecdd;
+  --ink:#2b3350;
+  --ink-soft:#5a628a;
+  --accent:#c1602c;
+  --accent-ink:#7a3416;
+  --good:#3f6a52;
+  --good-bg:#e3ede6;
+  --bad:#b3503f;
+  --bad-bg:#f3e1dc;
+  --line:#dfd6bd;
+  --card:#ffffff;
+  --shadow: 0 1px 2px rgba(43,51,80,.06), 0 6px 18px rgba(43,51,80,.08);
+  --radius:18px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1b1d2a;
+    --paper-2:#232637;
+    --ink:#eee7d6;
+    --ink-soft:#b9b2c9;
+    --accent:#e8894d;
+    --accent-ink:#ffd8b8;
+    --good:#7fbf9c;
+    --good-bg:#20362c;
+    --bad:#e08a78;
+    --bad-bg:#3a2422;
+    --line:#3a3d52;
+    --card:#242739;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1b1d2a;
+  --paper-2:#232637;
+  --ink:#eee7d6;
+  --ink-soft:#b9b2c9;
+  --accent:#e8894d;
+  --accent-ink:#ffd8b8;
+  --good:#7fbf9c;
+  --good-bg:#20362c;
+  --bad:#e08a78;
+  --bad-bg:#3a2422;
+  --line:#3a3d52;
+  --card:#242739;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;}
+body{
+  background:
+    radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1.6px) 0 0/22px 22px,
+    var(--paper);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+  min-height:100vh;
+  padding-block: 18px;
+}
+h1,h2,h3,.mincho{font-family:"Shippori Mincho", serif;}
+#app{max-width:920px;margin:0 auto;padding:0 18px 60px;}
+button{font-family:inherit;}
+.tabular{font-variant-numeric:tabular-nums;}
+
+/* ---- top bar ---- */
+.topbar{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:4px 0 22px;flex-wrap:wrap;}
+.brand{display:flex;align-items:baseline;gap:10px;}
+.brand .mark{font-family:"Shippori Mincho",serif;font-weight:800;font-size:26px;color:var(--accent-ink);}
+.brand .sub{font-size:12px;color:var(--ink-soft);letter-spacing:.04em;}
+.crumb{font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.crumb button{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:13px;padding:2px 4px;text-decoration:underline;text-underline-offset:2px;}
+.crumb button:hover{color:var(--accent-ink);}
+
+/* ---- cards / grid ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.cat-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 18px 16px;box-shadow:var(--shadow); cursor:pointer; text-align:left;
+  display:flex;flex-direction:column;gap:10px; position:relative; overflow:hidden;
+}
+.cat-card:active{transform:scale(.98);}
+.cat-card .tag{
+  align-self:flex-start;font-size:11px;padding:3px 9px;border-radius:99px;
+  background:var(--paper-2); color:var(--ink-soft); letter-spacing:.03em;
+}
+.cat-card h3{margin:0;font-size:22px;line-height:1.25;}
+.cat-card .desc{font-size:12.5px;color:var(--ink-soft);margin:0;}
+.bar{height:7px;border-radius:99px;background:var(--paper-2);overflow:hidden;margin-top:2px;}
+.bar > i{display:block;height:100%;background:var(--accent);border-radius:99px;}
+.cat-card .stats{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);}
+
+.section-title{font-size:14px;color:var(--ink-soft);letter-spacing:.06em;margin:30px 0 10px;text-transform:uppercase;}
+
+/* ---- category screen ---- */
+.cat-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.cat-header h2{margin:0;font-size:28px;}
+.cat-header .desc{color:var(--ink-soft);font-size:13px;margin-top:4px;}
+.modebar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:26px;}
+.mode-btn{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 16px;text-align:left;cursor:pointer;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:6px;
+}
+.mode-btn:active{transform:scale(.98);}
+.mode-btn .ico{font-size:22px;}
+.mode-btn b{font-size:16px;}
+.mode-btn span{font-size:12px;color:var(--ink-soft);}
+.mode-btn.primary{background:var(--accent);border-color:var(--accent);}
+.mode-btn.primary b, .mode-btn.primary span, .mode-btn.primary .ico{color:#fff;}
+
+.weak-list{display:flex;flex-direction:column;gap:8px;}
+.weak-row{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px;
+}
+.weak-row .w{font-weight:700;}
+.weak-row .r{color:var(--ink-soft);font-size:12px;}
+.pct{font-size:12.5px;padding:2px 8px;border-radius:99px;background:var(--bad-bg);color:var(--bad);font-weight:700;}
+.pct.ok{background:var(--good-bg);color:var(--good);}
+
+/* ---- flashcard (study) ---- */
+.study-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;}
+.progress-row{width:100%;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-soft);}
+.progress-row .bar{flex:1;}
+.flip-card{
+  width:100%;max-width:560px;min-height:320px;perspective:1400px;cursor:pointer;
+}
+.flip-inner{position:relative;width:100%;height:100%;min-height:320px;transition:transform .5s cubic-bezier(.2,.7,.3,1);transform-style:preserve-3d;}
+.flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px 26px;gap:14px;
+}
+.face.back{transform:rotateY(180deg);}
+.face .kw{font-family:"Shippori Mincho",serif;font-weight:800;font-size:40px;line-height:1.3;}
+.face .cat-tag{position:absolute;top:16px;left:18px;font-size:11px;color:var(--ink-soft);}
+.face .hint{position:absolute;bottom:16px;font-size:11.5px;color:var(--ink-soft);}
+.face .yomi{font-size:20px;color:var(--accent-ink);font-weight:700;}
+.face .meaning{font-size:15.5px;line-height:1.7;max-width:440px;}
+.face .example{font-size:13px;color:var(--ink-soft);border-top:1px dashed var(--line);padding-top:10px;margin-top:4px;max-width:440px;}
+.face .pairword{font-family:"Shippori Mincho",serif;font-weight:800;font-size:32px;}
+.face .arrow{font-size:20px;color:var(--ink-soft);}
+.study-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.icon-btn{
+  border:1px solid var(--line);background:var(--card);border-radius:14px;padding:12px 18px;
+  font-size:14px;cursor:pointer;box-shadow:var(--shadow); color:var(--ink);
+}
+.icon-btn:active{transform:scale(.96);}
+.icon-btn.big{padding:14px 26px;font-weight:700;}
+.icon-btn.accent{background:var(--accent);border-color:var(--accent);color:#fff;}
+.icon-btn.good{background:var(--good);border-color:var(--good);color:#fff;}
+.icon-btn.ghost{box-shadow:none;background:transparent;}
+select.filter-select{
+  border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 12px;font-size:13px;color:var(--ink);
+}
+
+/* ---- quiz/test ---- */
+.quiz-wrap{display:flex;flex-direction:column;gap:18px;max-width:640px;margin:0 auto;}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink-soft);}
+.score-chip{background:var(--paper-2);border-radius:99px;padding:5px 12px;font-weight:700;color:var(--ink);}
+.stem-card{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);
+  padding:26px 24px;text-align:center;
+}
+.stem-instr{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;letter-spacing:.02em;}
+.stem-main{font-size:19px;line-height:1.9;}
+.stem-main u.target{text-decoration:none;border-bottom:3px solid var(--accent);font-weight:700;padding:0 2px;}
+.stem-word{font-family:"Shippori Mincho",serif;font-size:34px;font-weight:800;margin-top:6px;}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:520px){.choices{grid-template-columns:1fr;}}
+.choice{
+  background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px 14px;
+  font-size:16px;cursor:pointer;text-align:center;box-shadow:var(--shadow);line-height:1.5;
+}
+.choice:active{transform:scale(.97);}
+.choice.correct{background:var(--good-bg);border-color:var(--good);color:var(--good);font-weight:700;}
+.choice.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);font-weight:700;}
+.choice[disabled]{cursor:default;}
+.feedback-row{display:flex;justify-content:center;}
+.next-btn{opacity:0;pointer-events:none;transition:opacity .2s;}
+.next-btn.show{opacity:1;pointer-events:auto;}
+
+.result-card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:34px 26px;text-align:center;max-width:520px;margin:0 auto;}
+.result-card .big{font-family:"Shippori Mincho",serif;font-size:46px;font-weight:800;color:var(--accent-ink);}
+.miss-list{display:flex;flex-direction:column;gap:8px;margin-top:18px;text-align:left;}
+.miss-row{display:flex;justify-content:space-between;background:var(--paper-2);border-radius:10px;padding:8px 12px;font-size:13.5px;}
+
+/* ---- print config ---- */
+.form-block{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px;}
+.form-block h4{margin:0 0 10px;font-size:14px;color:var(--ink-soft);letter-spacing:.03em;}
+.opt-row{display:flex;gap:10px;flex-wrap:wrap;}
+.opt{
+  border:2px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13.5px;cursor:pointer;background:var(--paper-2);
+}
+.opt.sel{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:700;}
+.count-row{display:flex;align-items:center;gap:12px;}
+.count-row input[type=range]{flex:1;}
+.preview-list{max-height:260px;overflow:auto;border:1px dashed var(--line);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--ink-soft);}
+.preview-list div{padding:4px 0;border-bottom:1px dotted var(--line);}
+.homophone-note{background:var(--paper-2);border-left:4px solid var(--accent);border-radius:8px;padding:10px 14px;font-size:12.5px;margin-top:8px;}
+
+footer.tip{margin-top:40px;text-align:center;font-size:12px;color:var(--ink-soft);}
+
+/* ---- print output (screen hidden) ---- */
+#printArea{display:none;}
+@media print{
+  body > *:not(#printArea){display:none !important;}
+  body{background:#fff;padding:0;}
+  #printArea{display:block !important;}
+  .p-page{padding:14mm 12mm;page-break-after:always;}
+  .p-page:last-child{page-break-after:auto;}
+  .p-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:16px;}
+  .p-head h2{margin:0;font-size:20px;font-family:"Shippori Mincho",serif;}
+  .p-namebox{font-size:12px;}
+  .p-namebox .line{display:inline-block;width:120px;border-bottom:1px solid #000;margin-left:6px;}
+  .p-q{margin-bottom:16px;font-size:14px;line-height:2;page-break-inside:avoid;}
+  .p-q .num{font-weight:700;margin-right:6px;}
+  .p-q .blank{display:inline-block;min-width:110px;border-bottom:1px solid #000;margin:0 4px;}
+  .p-q .katakana-target{text-decoration:underline;text-decoration-style:dotted;}
+  .p-answers{font-size:12px;line-height:1.9;column-count:2;}
+  .p-hgroup{font-size:11.5px;border:1px solid #000;padding:8px 10px;margin:14px 0;border-radius:4px;}
+  .p-title-answers{font-family:"Shippori Mincho",serif;font-size:16px;margin-bottom:10px;}
+}
+@media not print {
+  #printArea{display:none;}
+}
+</style>
+
+<div id="app"></div>
+<footer class="tip no-print">ことのはノート — 学習の記録はこの端末（このブラウザ）に保存されます。</footer>
+
+<div id="printArea"></div>
+
+<script>window.__KOTONOHA_DATA__={"kanji": [{"word": "専門", "reading": "せんもん", "meaning": "ある一つのことを深く学んだり研究したりする分野。", "example": "兄は医学を専門に勉強している。", "writingSentence": "彼はロボット工学がセンモンの研究者だ。", "distractorReadings": ["せんかど", "せんぼん"], "altKanji": null, "id": "k1"}, {"word": "染めて", "reading": "そめて", "meaning": "布や髪などに色をつけること。", "example": "母はセーターを緑色に染めてくれた。", "writingSentence": "美容院で髪を茶色にソメテもらった。", "distractorReadings": ["しめて", "せんめて"], "altKanji": null, "id": "k2"}, {"word": "刻む", "reading": "きざむ", "meaning": "包丁などで細かく切ること。または心に深く残すこと。", "example": "料理のためにキャベツを刻む。", "writingSentence": "石碑に人々の名前をキザム作業が続く。", "distractorReadings": ["こくむ", "さいむ"], "altKanji": null, "id": "k3"}, {"word": "奮う", "reading": "ふるう", "meaning": "元気や勇気を強くわき立たせること。", "example": "兄は勇気を奮って発言した。", "writingSentence": "選手たちは最後まで力をフルウ。", "distractorReadings": ["ふんう", "おごう"], "altKanji": null, "id": "k4"}, {"word": "敬う", "reading": "うやまう", "meaning": "目上の人などを尊いものとして大切に思うこと。", "example": "高齢の方を敬う心を持ちましょう。", "writingSentence": "先祖をウヤマウ気持ちを忘れない。", "distractorReadings": ["けいう", "きょうう"], "altKanji": null, "id": "k5"}, {"word": "険しい", "reading": "けわしい", "meaning": "道や山などが急で、進むのが大変な様子。", "example": "険しい山道を汗だくで登った。", "writingSentence": "この先はケワシイ崖なので注意が必要だ。", "distractorReadings": ["けんしい", "きびしい"], "altKanji": null, "id": "k6"}, {"word": "省く", "reading": "はぶく", "meaning": "余分なものを取り除いて、簡単にすること。", "example": "説明の一部を省く。", "writingSentence": "手続きの無駄をハブク工夫をした。", "distractorReadings": ["せいく", "しょうく"], "altKanji": null, "id": "k7"}, {"word": "複雑", "reading": "ふくざつ", "meaning": "物事がいくつも絡み合っていて、わかりにくいこと。", "example": "この機械の仕組みはとても複雑だ。", "writingSentence": "事件の原因はフクザツにからみ合っていた。", "distractorReadings": ["ふくじゅう", "ふくぞう"], "altKanji": null, "id": "k8"}, {"word": "容易", "reading": "ようい", "meaning": "たやすくて、簡単にできること。", "example": "この問題は容易に解けた。", "writingSentence": "その仕事はヨウイに終わった。", "distractorReadings": ["ようえき", "よい"], "altKanji": null, "id": "k9"}, {"word": "額", "reading": "がく", "meaning": "お金の量や、絵などを入れて飾る枠のこと。", "example": "寄付の額を発表した。", "writingSentence": "部屋の壁に絵のガクを飾った。", "distractorReadings": ["ひたい", "たかく"], "altKanji": null, "id": "k10"}, {"word": "発揮", "reading": "はっき", "meaning": "持っている力や才能を、実際にあらわすこと。", "example": "本番で練習の成果を発揮した。", "writingSentence": "大会で自分の力をハッキした。", "distractorReadings": ["はつき", "はっぎ"], "altKanji": null, "id": "k11"}, {"word": "唱える", "reading": "となえる", "meaning": "声に出して言ったり、新しい考えを主張したりすること。", "example": "僧侶がお経を唱える。", "writingSentence": "学者が新しい理論をトナエル。", "distractorReadings": ["しょうえる", "うたえる"], "altKanji": null, "id": "k12"}, {"word": "納める", "reading": "おさめる", "meaning": "お金や物を、決められたところにきちんと渡すこと。", "example": "税金を期日までに納める。", "writingSentence": "税金を期限内にオサメル。", "distractorReadings": ["のうめる", "なんめる"], "altKanji": null, "id": "k13"}, {"word": "意外", "reading": "いがい", "meaning": "思っていたこととちがって、驚くような様子。", "example": "テストの結果は意外に良かった。", "writingSentence": "試合の結果はイガイなものだった。", "distractorReadings": ["いそと", "いほか"], "altKanji": null, "id": "k14"}, {"word": "営む", "reading": "いとなむ", "meaning": "仕事や生活などを、続けて行うこと。", "example": "祖父は小さな店を営む。", "writingSentence": "祖父は町で長年、パン屋をイトナム。", "distractorReadings": ["えいむ", "えいとなむ"], "altKanji": null, "id": "k15"}, {"word": "拾う", "reading": "ひろう", "meaning": "落ちているものを、手に取ること。", "example": "公園でどんぐりを拾う。", "writingSentence": "道に落ちていた財布をヒロウ。", "distractorReadings": ["しゅうう", "じゅうう"], "altKanji": null, "id": "k16"}, {"word": "沿って", "reading": "そって", "meaning": "川や道などのそばに続いていること。", "example": "川に沿って歩いた。", "writingSentence": "線路にソッテ道が続いている。", "distractorReadings": ["えんって", "そいって"], "altKanji": null, "id": "k17"}, {"word": "危険", "reading": "きけん", "meaning": "危ないことが起こりそうな様子。", "example": "この場所は危険だから近づかない。", "writingSentence": "工事現場はキケンなので立ち入り禁止だ。", "distractorReadings": ["きげん", "ぎけん"], "altKanji": null, "id": "k18"}, {"word": "厳しい", "reading": "きびしい", "meaning": "少しのゆるみも許さず、規則正しく厳格な様子。", "example": "祖父はしつけに厳しい人だ。", "writingSentence": "監督はチームにキビシイ練習を課した。", "distractorReadings": ["げんしい", "おごそしい"], "altKanji": null, "id": "k19"}, {"word": "設ける", "reading": "もうける", "meaning": "新しく作ったり、準備したりすること。", "example": "学校に相談窓口を設ける。", "writingSentence": "委員会は新しい規則をモウケル。", "distractorReadings": ["せっける", "もうべる"], "altKanji": null, "id": "k20"}, {"word": "任せる", "reading": "まかせる", "meaning": "仕事などを人に頼んで、やってもらうこと。", "example": "この仕事は君に任せる。", "writingSentence": "係の仕事を後輩にマカセル。", "distractorReadings": ["にんせる", "にませる"], "altKanji": null, "id": "k21"}, {"word": "務める", "reading": "つとめる", "meaning": "ある役目や仕事を受け持つこと。", "example": "彼は司会を務める。", "writingSentence": "彼は今年、学級委員をツトメル。", "distractorReadings": ["むめる", "つかめる"], "altKanji": null, "id": "k22"}, {"word": "招く", "reading": "まねく", "meaning": "人を呼んで来てもらうこと。また、悪い結果を引き起こすこと。", "example": "誕生日会に友達を招く。", "writingSentence": "式典に大切なお客様をマネク。", "distractorReadings": ["しょうく", "まねぐ"], "altKanji": null, "id": "k23"}, {"word": "垂れて", "reading": "たれて", "meaning": "液体やひもなどが、下に下がること。", "example": "木の枝から雨のしずくが垂れている。", "writingSentence": "柳の枝が川面にタレテいる。", "distractorReadings": ["すいれて", "しだれて"], "altKanji": null, "id": "k24"}, {"word": "補う", "reading": "おぎなう", "meaning": "足りない部分を、他のもので付け加えること。", "example": "不足した栄養を補う。", "writingSentence": "練習不足を努力でオギナウ。", "distractorReadings": ["ほう", "ほじゅう"], "altKanji": null, "id": "k25"}, {"word": "浴びる", "reading": "あびる", "meaning": "水やお湯、光などを体全体に受けること。", "example": "朝シャワーを浴びる。", "writingSentence": "選手たちは大きな拍手をアビル。", "distractorReadings": ["よくびる", "えきびる"], "altKanji": null, "id": "k26"}, {"word": "朗らか", "reading": "ほがらか", "meaning": "明るくて、元気で、気持ちがよい様子。", "example": "妹はいつも朗らかに笑っている。", "writingSentence": "彼はいつもホガラカな性格だ。", "distractorReadings": ["ろうらか", "あきらか"], "altKanji": null, "id": "k27"}, {"word": "検討", "reading": "けんとう", "meaning": "よく調べて、どうするかを考えること。", "example": "計画についてもう一度検討する。", "writingSentence": "新しい案についてケントウを重ねた。", "distractorReadings": ["けんどう", "げんとう"], "altKanji": null, "id": "k28"}, {"word": "耕す", "reading": "たがやす", "meaning": "作物を育てるために、田や畑の土を掘り返すこと。", "example": "春になったら畑を耕す。", "writingSentence": "農家の人が朝から畑をタガヤス。", "distractorReadings": ["こうす", "たがえす"], "altKanji": null, "id": "k29"}, {"word": "操縦", "reading": "そうじゅう", "meaning": "飛行機や機械などを、思い通りに動かすこと。", "example": "パイロットが飛行機を操縦する。", "writingSentence": "兄は模型飛行機をソウジュウするのが得意だ。", "distractorReadings": ["そうしゅう", "そうたて"], "altKanji": null, "id": "k30"}, {"word": "築いた", "reading": "きずいた", "meaning": "時間をかけて、財産や地位などを作り上げること。", "example": "彼は一代で会社を築いた。", "writingSentence": "一代で財をキズイタ人だ。", "distractorReadings": ["ちくいた", "つみいた"], "altKanji": null, "id": "k31"}, {"word": "著しい", "reading": "いちじるしい", "meaning": "とても目立って、はっきりわかるほどである様子。", "example": "この一年で身長が著しく伸びた。", "writingSentence": "今年の成長はイチジルシイものだった。", "distractorReadings": ["ちょしい", "あらわしい"], "altKanji": null, "id": "k32"}, {"word": "復興", "reading": "ふっこう", "meaning": "一度衰えたものが、再び盛んになること。", "example": "町の復興のために皆が協力した。", "writingSentence": "地震の後、町はフッコウを遂げた。", "distractorReadings": ["ふくこう", "ふくきょう"], "altKanji": null, "id": "k33"}, {"word": "預ける", "reading": "あずける", "meaning": "物やお金、人などを、他の人に一時的に任せること。", "example": "銀行にお金を預ける。", "writingSentence": "旅行の間、荷物をフロントにアズケル。", "distractorReadings": ["よける", "よたける"], "altKanji": null, "id": "k34"}, {"word": "映る", "reading": "うつる", "meaning": "光や姿が、鏡や画面などに現れること。", "example": "鏡に自分の姿が映る。", "writingSentence": "湖の水面に山の景色がウツル。", "distractorReadings": ["えいる", "はえる"], "altKanji": null, "id": "k35"}, {"word": "衛星", "reading": "えいせい", "meaning": "惑星の周りを回る天体、また打ち上げた人工の機械。", "example": "月は地球の衛星だ。", "writingSentence": "天気予報のためにエイセイから画像を送る。", "distractorReadings": ["えいしょう", "がいせい"], "altKanji": null, "id": "k36"}, {"word": "過程", "reading": "かてい", "meaning": "物事が進んでいく途中の道筋。", "example": "実験の過程をノートに記録した。", "writingSentence": "研究のカテイを詳しく説明した。", "distractorReadings": ["かほど", "つうてい"], "altKanji": null, "id": "k37"}, {"word": "快く", "reading": "こころよく", "meaning": "いやな気持ちがなく、気持ちよく引き受ける様子。", "example": "頼みごとを快く引き受けてくれた。", "writingSentence": "友人は手伝いをココロヨク引き受けてくれた。", "distractorReadings": ["かいく", "はやく"], "altKanji": null, "id": "k38"}, {"word": "気配", "reading": "けはい", "meaning": "はっきりしないが、何となく感じられる様子。", "example": "誰かがいる気配がした。", "writingSentence": "廊下に人のケハイを感じた。", "distractorReadings": ["きはい", "きくばり"], "altKanji": null, "id": "k39"}, {"word": "規模", "reading": "きぼ", "meaning": "物事の大きさや、広がりの程度。", "example": "この工事は規模が大きい。", "writingSentence": "大キボな祭りが開かれた。", "distractorReadings": ["きも", "きぼう"], "altKanji": null, "id": "k40"}, {"word": "単純", "reading": "たんじゅん", "meaning": "物事が入り組んでおらず、簡単でわかりやすいこと。", "example": "この問題は単純だ。", "writingSentence": "その仕組みはとてもタンジュンだった。", "distractorReadings": ["たんすい", "たんしゅん"], "altKanji": null, "id": "k41"}, {"word": "供える", "reading": "そなえる", "meaning": "神様や仏様、亡くなった人に、物を差し出すこと。", "example": "お墓に花を供える。", "writingSentence": "仏壇に果物をソナエル。", "distractorReadings": ["きょうえる", "くえる"], "altKanji": null, "id": "k42"}, {"word": "操作", "reading": "そうさ", "meaning": "機械などを、思い通りに動かすこと。", "example": "リモコンの操作を覚える。", "writingSentence": "この機械のソウサはとても簡単だ。", "distractorReadings": ["そうさく", "しょうさ"], "altKanji": null, "id": "k43"}, {"word": "練る", "reading": "ねる", "meaning": "材料をこねたり、考えを何度も見直して良くしたりすること。", "example": "小麦粉を水で練る。", "writingSentence": "皆で計画をよくネル。", "distractorReadings": ["れんる", "れる"], "altKanji": null, "id": "k44"}, {"word": "簡単", "reading": "かんたん", "meaning": "手間がかからず、やさしくできる様子。", "example": "この料理は簡単に作れる。", "writingSentence": "そのテストはとてもカンタンだった。", "distractorReadings": ["かんだん", "けんたん"], "altKanji": null, "id": "k45"}, {"word": "勤める", "reading": "つとめる", "meaning": "会社などに雇われて、仕事をすること。", "example": "父は銀行に勤めている。", "writingSentence": "父は会社にツトメル。", "distractorReadings": ["きんめる", "ごんめる"], "altKanji": null, "id": "k46"}, {"word": "功績", "reading": "こうせき", "meaning": "立派な仕事をして、社会などに役立ったこと。", "example": "発明家の功績をたたえる。", "writingSentence": "彼の研究のコウセキは大きい。", "distractorReadings": ["こうしゃく", "くせき"], "altKanji": null, "id": "k47"}, {"word": "口調", "reading": "くちょう", "meaning": "話すときの言葉の調子や言い方。", "example": "優しい口調で話しかけた。", "writingSentence": "先生は厳しいクチョウで注意した。", "distractorReadings": ["こうちょう", "くつちょう"], "altKanji": null, "id": "k48"}, {"word": "拝む", "reading": "おがむ", "meaning": "神様や仏様に向かって、手を合わせてお祈りすること。", "example": "神社で手を合わせて拝む。", "writingSentence": "毎朝仏壇をオガム。", "distractorReadings": ["はいむ", "おろがむ"], "altKanji": null, "id": "k49"}, {"word": "編む", "reading": "あむ", "meaning": "毛糸やひもなどを組み合わせて、形あるものを作ること。", "example": "毛糸でマフラーを編む。", "writingSentence": "祖母はセーターをアム。", "distractorReadings": ["へんむ", "くむ"], "altKanji": null, "id": "k50"}, {"word": "演奏", "reading": "えんそう", "meaning": "楽器を使って、音楽を人前で行うこと。", "example": "ピアノの演奏を聴きに行った。", "writingSentence": "文化祭でバイオリンをエンソウした。", "distractorReadings": ["えんぞう", "えんしょう"], "altKanji": null, "id": "k51"}, {"word": "穀物", "reading": "こくもつ", "meaning": "米や麦など、主食になる作物のこと。", "example": "米や小麦は穀物の一種だ。", "writingSentence": "この地方はコクモツの生産が盛んだ。", "distractorReadings": ["こくぶつ", "たにもつ"], "altKanji": null, "id": "k52"}, {"word": "指揮", "reading": "しき", "meaning": "大勢の人に指示を出して、物事をまとめて動かすこと。", "example": "指揮者がオーケストラの指揮をする。", "writingSentence": "監督が試合でチームのシキをとる。", "distractorReadings": ["しいき", "ゆびき"], "altKanji": null, "id": "k53"}, {"word": "頂", "reading": "いただき", "meaning": "山などの一番高いところ。", "example": "山の頂に登り切った。", "writingSentence": "ついに山のイタダキに到達した。", "distractorReadings": ["ちょう", "いただ"], "altKanji": null, "id": "k54"}, {"word": "努める", "reading": "つとめる", "meaning": "力を尽くして、そのことを頑張ってしようとすること。", "example": "目標達成に努める。", "writingSentence": "毎日の練習に努力してツトメル。", "distractorReadings": ["どめる", "のうめる"], "altKanji": null, "id": "k55"}, {"word": "幼い", "reading": "おさない", "meaning": "年齢がとても小さく、子どもである様子。", "example": "幼いころの思い出を話す。", "writingSentence": "妹はまだオサナイ。", "distractorReadings": ["わかい", "ちいさい"], "altKanji": null, "id": "k56"}, {"word": "易しい", "reading": "やさしい", "meaning": "簡単で、わかりやすい様子。", "example": "この問題は易しいので、すぐに解けた。", "writingSentence": "この算数の問題はヤサシイと思う。", "distractorReadings": ["いしい", "えきしい"], "altKanji": null, "id": "k57"}, {"word": "遺産", "reading": "いさん", "meaning": "昔の人が残した財産や、大切な文化・建物などのこと。", "example": "世界遺産に登録された建物を見学した。", "writingSentence": "祖父からイサンを受け継いだ。", "distractorReadings": ["いざん", "ゆいさん"], "altKanji": null, "id": "k58"}, {"word": "拡張", "reading": "かくちょう", "meaning": "広さや規模を、今より大きく広げること。", "example": "道路の拡張工事が始まった。", "writingSentence": "駅前の道路をカクチョウする工事が始まった。", "distractorReadings": ["こうちょう", "かくばり"], "altKanji": null, "id": "k59"}, {"word": "磁石", "reading": "じしゃく", "meaning": "鉄を引きつけたり、方角を示したりする道具。", "example": "磁石を使って方角を調べる。", "writingSentence": "理科の授業でジシャクを使った実験をした。", "distractorReadings": ["じせき", "ましゃく"], "altKanji": null, "id": "k60"}, {"word": "射る", "reading": "いる", "meaning": "弓を使って、矢を的に向けて放つこと。", "example": "弓で的を射る。", "writingSentence": "弓道部員が的をイル。", "distractorReadings": ["しゃる", "うる"], "altKanji": null, "id": "k61"}, {"word": "直ちに", "reading": "ただちに", "meaning": "時間をおかず、すぐに行う様子。", "example": "事故の知らせを聞き、直ちに現場へ向かった。", "writingSentence": "警報が鳴ったらタダチニ避難しなさい。", "distractorReadings": ["ちょくちに", "じかちに"], "altKanji": null, "id": "k62"}, {"word": "批判", "reading": "ひはん", "meaning": "物事の悪いところを指摘して、意見を述べること。", "example": "友人の意見を批判する。", "writingSentence": "その計画には多くのヒハンが集まった。", "distractorReadings": ["ひばん", "ひひょう"], "altKanji": null, "id": "k63"}, {"word": "率いる", "reading": "ひきいる", "meaning": "人々の先頭に立って、まとめて導くこと。", "example": "監督がチームを率いる。", "writingSentence": "キャプテンがチームをヒキイル。", "distractorReadings": ["そついる", "りついる"], "altKanji": null, "id": "k64"}, {"word": "慣れ", "reading": "なれ", "meaning": "何度も経験して、そのことに違和感を感じなくなること。", "example": "新しい仕事にも慣れが出てきた。", "writingSentence": "毎日の練習でナレが出てきた。", "distractorReadings": ["かんれ", "じゅくれ"], "altKanji": null, "id": "k65"}, {"word": "貴重", "reading": "きちょう", "meaning": "とても大切で、値打ちがあること。", "example": "貴重な体験ができた。", "writingSentence": "これはキチョウな資料だ。", "distractorReadings": ["きじゅう", "きちょく"], "altKanji": null, "id": "k66"}, {"word": "誤る", "reading": "あやまる", "meaning": "間違ったことをすること。", "example": "計算を誤ると答えが合わない。", "writingSentence": "道をアヤマルと大変なことになる。", "distractorReadings": ["ごる", "あやまえる"], "altKanji": null, "id": "k67"}, {"word": "裁く", "reading": "さばく", "meaning": "争いごとについて、正しいか正しくないかを決めること。", "example": "裁判官が事件を裁く。", "writingSentence": "裁判官が事件をサバク。", "distractorReadings": ["さいく", "さいはん"], "altKanji": null, "id": "k68"}, {"word": "招待", "reading": "しょうたい", "meaning": "人を呼んで、来てもらうようお願いすること。", "example": "友達の誕生日会に招待された。", "writingSentence": "結婚式にショウタイされた。", "distractorReadings": ["しょうだい", "まねたい"], "altKanji": null, "id": "k69"}, {"word": "深刻", "reading": "しんこく", "meaning": "事態がとても重大で、心配になる様子。", "example": "環境問題は深刻な状況だ。", "writingSentence": "食料不足はシンコクな問題になっている。", "distractorReadings": ["しんこう", "じんこく"], "altKanji": null, "id": "k70"}, {"word": "綿密", "reading": "めんみつ", "meaning": "細かいところまで、注意深く行う様子。", "example": "綿密な計画を立てて旅行に出かけた。", "writingSentence": "犯人はメンミツな計画を立てていた。", "distractorReadings": ["わたみつ", "めんびつ"], "altKanji": null, "id": "k71"}, {"word": "看護", "reading": "かんご", "meaning": "病気やけがをした人の世話をすること。", "example": "看護師が患者を看護する。", "writingSentence": "母は入院した祖父をカンゴした。", "distractorReadings": ["かんこ", "けんご"], "altKanji": null, "id": "k72"}, {"word": "汽笛", "reading": "きてき", "meaning": "汽車や船が鳴らす、大きな音の笛。", "example": "船が汽笛を鳴らして出発した。", "writingSentence": "港で船のキテキが鳴り響いた。", "distractorReadings": ["きじょう", "きふえ"], "altKanji": null, "id": "k73"}, {"word": "興味", "reading": "きょうみ", "meaning": "あることに心を引かれて、もっと知りたいと思う気持ち。", "example": "昆虫に興味がある。", "writingSentence": "弟は恐竜にキョウミを持っている。", "distractorReadings": ["こうみ", "きょうび"], "altKanji": null, "id": "k74"}, {"word": "形相", "reading": "ぎょうそう", "meaning": "怒りや驚きなどが表れた、顔つきのこと。", "example": "鬼のような形相で怒られた。", "writingSentence": "父は鬼のようなギョウソウで叱った。", "distractorReadings": ["けいそう", "かたちあい"], "altKanji": null, "id": "k75"}, {"word": "困った", "reading": "こまった", "meaning": "どうすればよいか分からず、苦しい気持ちになること。", "example": "電車が止まって困った。", "writingSentence": "道具を忘れてコマッタ経験がある。", "distractorReadings": ["こんった", "くるった"], "altKanji": null, "id": "k76"}, {"word": "済んだ", "reading": "すんだ", "meaning": "物事が終わって、片付いたこと。", "example": "宿題はもう済んだ。", "writingSentence": "話し合いは無事にスンダ。", "distractorReadings": ["さいんだ", "せいんだ"], "altKanji": null, "id": "k77"}, {"word": "刷る", "reading": "する", "meaning": "版にインクをつけて、紙に絵や字を写し取ること。", "example": "年賀状を刷る。", "writingSentence": "新聞をたくさんスル機械がある。", "distractorReadings": ["さつする", "こする"], "altKanji": null, "id": "k78"}, {"word": "志す", "reading": "こころざす", "meaning": "将来こうなりたいと、目標を心に決めること。", "example": "医者になることを志す。", "writingSentence": "彼は将来、科学者になろうとココロザス。", "distractorReadings": ["こころさす", "しす"], "altKanji": null, "id": "k79"}, {"word": "宣言", "reading": "せんげん", "meaning": "自分の考えや方針を人々にはっきりと述べること。", "example": "独立を宣言する。", "writingSentence": "大会の開会をセンゲンする。", "distractorReadings": ["せんごん", "せんけん"], "altKanji": null, "id": "k80"}, {"word": "典型", "reading": "てんけい", "meaning": "あるものの特徴をよく表している代表的な例。", "example": "彼は努力家の典型だ。", "writingSentence": "この建物は和風建築のテンケイだ。", "distractorReadings": ["てんぎょう", "でんけい"], "altKanji": null, "id": "k81"}, {"word": "備える", "reading": "そなえる", "meaning": "何かが起こる前に、必要なものを用意しておくこと。", "example": "地震に備えて水を用意する。", "writingSentence": "台風にソナエル準備をする。", "distractorReadings": ["びえる", "そなわえる"], "altKanji": null, "id": "k82"}, {"word": "尋ねた", "reading": "たずねた", "meaning": "分からないことを人に聞いたこと。", "example": "駅までの道を尋ねた。", "writingSentence": "先生に意味をタズネタ。", "distractorReadings": ["じんねた", "たずんだ"], "altKanji": null, "id": "k83"}, {"word": "委ねる", "reading": "ゆだねる", "meaning": "物事の判断や処理を、人に任せること。", "example": "判断を専門家に委ねる。", "writingSentence": "後のことは仲間にユダネル。", "distractorReadings": ["いねる", "ゆだんねる"], "altKanji": null, "id": "k84"}, {"word": "育む", "reading": "はぐくむ", "meaning": "大切に守り、育てていくこと。", "example": "子どもの夢を育む。", "writingSentence": "豊かな心をハグクム教育。", "distractorReadings": ["いくむ", "そだくむ"], "altKanji": null, "id": "k85"}, {"word": "郷里", "reading": "きょうり", "meaning": "自分が生まれ育った土地、ふるさとのこと。", "example": "夏休みに郷里へ帰る。", "writingSentence": "夏休みにキョウリへ帰る。", "distractorReadings": ["ごうり", "きょうざと"], "altKanji": null, "id": "k86"}, {"word": "潔い", "reading": "いさぎよい", "meaning": "態度や行いがきっぱりしていて、立派なこと。", "example": "負けを潔く認める。", "writingSentence": "彼はイサギヨイ態度で謝った。", "distractorReadings": ["けっぱい", "けつよい"], "altKanji": null, "id": "k87"}, {"word": "効く", "reading": "きく", "meaning": "薬などの働きが、体にあらわれること。", "example": "この薬はよく効く。", "writingSentence": "この風邪薬はよくキク。", "distractorReadings": ["こうく", "きこう"], "altKanji": null, "id": "k88"}, {"word": "厚い", "reading": "あつい", "meaning": "物の厚みが大きいこと、また人情が深いこと。", "example": "厚い本を読む。", "writingSentence": "彼は人情にアツイ人だ。", "distractorReadings": ["こうい", "あつつい"], "altKanji": null, "id": "k89"}, {"word": "従う", "reading": "したがう", "meaning": "決まりや人の言うことのとおりに行動すること。", "example": "先生の指示に従う。", "writingSentence": "規則にシタガウことが大切だ。", "distractorReadings": ["じゅうう", "したごう"], "altKanji": null, "id": "k90"}, {"word": "縦断", "reading": "じゅうだん", "meaning": "南北の方向に、通り抜けること。", "example": "台風が日本列島を縦断する。", "writingSentence": "自転車で日本列島をジュウダンする旅に出た。", "distractorReadings": ["たてだん", "じゅうたん"], "altKanji": null, "id": "k91"}, {"word": "推測", "reading": "すいそく", "meaning": "はっきり分からないことを、たぶんこうだろうと考えること。", "example": "犯人の行動を推測する。", "writingSentence": "結果をスイソクして答える。", "distractorReadings": ["すいそう", "たいそく"], "altKanji": null, "id": "k92"}, {"word": "対象", "reading": "たいしょう", "meaning": "行動や考えの目当てとなるもの。", "example": "小学生を対象にした本。", "writingSentence": "この調査は中学生をタイショウにしている。", "distractorReadings": ["たいしょ", "ついしょう"], "altKanji": null, "id": "k93"}, {"word": "貯蔵", "reading": "ちょぞう", "meaning": "物をたくわえて、しまっておくこと。", "example": "米を倉庫に貯蔵する。", "writingSentence": "野菜を地下室にチョゾウする。", "distractorReadings": ["ちょうぞう", "たくぞう"], "altKanji": null, "id": "k94"}, {"word": "費やす", "reading": "ついやす", "meaning": "お金や時間、力などを使ってなくすこと。", "example": "研究に十年を費やす。", "writingSentence": "彼は研究に長い年月をツイヤス。", "distractorReadings": ["ひやす", "ついす"], "altKanji": null, "id": "k95"}, {"word": "風潮", "reading": "ふうちょう", "meaning": "時代とともに変わる、世の中の考え方の傾向。", "example": "最近の風潮について話す。", "writingSentence": "現代のフウチョウについて考える。", "distractorReadings": ["ふうしお", "かぜちょう"], "altKanji": null, "id": "k96"}, {"word": "養蚕", "reading": "ようさん", "meaning": "絹の糸をとるために、カイコを育てること。", "example": "昔は多くの農家で養蚕が行われた。", "writingSentence": "この地方では昔からヨウサンが盛んだ。", "distractorReadings": ["ようざん", "やしないかいこ"], "altKanji": null, "id": "k97"}, {"word": "意図", "reading": "いと", "meaning": "何かをしようとする考えや目的。", "example": "作者の意図を読み取る。", "writingSentence": "発言のイトが分からない。", "distractorReadings": ["いとう", "いず"], "altKanji": null, "id": "k98"}, {"word": "宇宙", "reading": "うちゅう", "meaning": "地球や星、太陽などすべてを含む、広い空間。", "example": "宇宙にはたくさんの星がある。", "writingSentence": "ウチュウに関する本を読む。", "distractorReadings": ["うじゅう", "うちゅ"], "altKanji": null, "id": "k99"}, {"word": "往復", "reading": "おうふく", "meaning": "行きと帰り、両方向に行き来すること。", "example": "駅まで往復一時間かかる。", "writingSentence": "学校までオウフクで一時間歩く。", "distractorReadings": ["おうぶく", "おうふう"], "altKanji": null, "id": "k100"}, {"word": "看板", "reading": "かんばん", "meaning": "店の名前や商品を書いて、人に知らせる板。", "example": "店の前に看板を出す。", "writingSentence": "新しいカンバンを店の前に立てた。", "distractorReadings": ["みばん", "かんいた"], "altKanji": null, "id": "k101"}, {"word": "境内", "reading": "けいだい", "meaning": "神社やお寺の敷地の中。", "example": "神社の境内で遊ぶ。", "writingSentence": "祭りの日、ケイダイはにぎわった。", "distractorReadings": ["きょうない", "さかいうち"], "altKanji": null, "id": "k102"}, {"word": "穀倉", "reading": "こくそう", "meaning": "米や麦などの穀物が、たくさん作られる豊かな土地。", "example": "この地方は日本有数の穀倉地帯だ。", "writingSentence": "この平野はコクソウ地帯として知られる。", "distractorReadings": ["こくぐら", "こっそう"], "altKanji": null, "id": "k103"}, {"word": "至急", "reading": "しきゅう", "meaning": "非常に急ぐこと、すぐにということ。", "example": "至急連絡をください。", "writingSentence": "シキュウご返信ください。", "distractorReadings": ["じきゅう", "しっきゅう"], "altKanji": null, "id": "k104"}, {"word": "重宝", "reading": "ちょうほう", "meaning": "便利で、よく役に立つこと。", "example": "このはさみは重宝している。", "writingSentence": "この道具は本当にチョウホウしている。", "distractorReadings": ["じゅうほう", "じゅうたから"], "altKanji": null, "id": "k105"}, {"word": "貸し", "reading": "かし", "meaning": "人に物やお金を貸すこと、また貸した分の恩や権利。", "example": "友だちに本の貸しがある。", "writingSentence": "彼には少しカシがある。", "distractorReadings": ["たいし", "かり"], "altKanji": null, "id": "k106"}, {"word": "退く", "reading": "しりぞく", "meaning": "後ろへ下がること、また地位や仕事をやめること。", "example": "危険を感じて一歩退く。", "writingSentence": "危険を感じて一歩シリゾク。", "distractorReadings": ["たいく", "のく"], "altKanji": null, "id": "k107"}, {"word": "誕生", "reading": "たんじょう", "meaning": "人が生まれること、また物事が新しく始まること。", "example": "弟が誕生した日を祝う。", "writingSentence": "新しい会社がタンジョウした。", "distractorReadings": ["たんせい", "だんじょう"], "altKanji": null, "id": "k108"}, {"word": "注ぐ", "reading": "そそぐ", "meaning": "液体を器に入れること、また力や心を一つに向けること。", "example": "コップに水を注ぐ。", "writingSentence": "グラスにジュースをソソグ。", "distractorReadings": ["ちゅうぐ", "そぐ"], "altKanji": null, "id": "k109"}, {"word": "提供", "reading": "ていきょう", "meaning": "物や情報を差し出して、人に役立ててもらうこと。", "example": "情報を提供する。", "writingSentence": "資料をテイキョウする。", "distractorReadings": ["ていきゅう", "たいきょう"], "altKanji": null, "id": "k110"}, {"word": "養う", "reading": "やしなう", "meaning": "世話をして育てること、また力や習慣を身につけること。", "example": "体力を養う。", "writingSentence": "読書の習慣をヤシナウ。", "distractorReadings": ["ようなう", "やしのう"], "altKanji": null, "id": "k111"}, {"word": "逆らう", "reading": "さからう", "meaning": "人の言うことや、流れなどに反対する行動をとること。", "example": "親の意見に逆らう。", "writingSentence": "川の流れにサカラウ。", "distractorReadings": ["ぎゃくらう", "さかろう"], "altKanji": null, "id": "k112"}, {"word": "雑誌", "reading": "ざっし", "meaning": "いろいろな記事や写真をのせて、定期的に出される本。", "example": "好きな雑誌を毎月買う。", "writingSentence": "新しいザッシを本屋で買った。", "distractorReadings": ["ぞうし", "ざつし"], "altKanji": null, "id": "k113"}, {"word": "姿勢", "reading": "しせい", "meaning": "体の構え方、また物事に取り組む心の持ち方。", "example": "正しい姿勢で座る。", "writingSentence": "勉強に取り組むシセイが大切だ。", "distractorReadings": ["すがた", "しぜい"], "altKanji": null, "id": "k114"}, {"word": "著名", "reading": "ちょめい", "meaning": "名前が広く知られていて、有名なこと。", "example": "著名な作家の講演を聞く。", "writingSentence": "彼はチョメイな科学者だ。", "distractorReadings": ["ちゃくめい", "しょめい"], "altKanji": null, "id": "k115"}, {"word": "展開", "reading": "てんかい", "meaning": "物事がだんだん広がって、進んでいくこと。", "example": "話が意外な方向に展開する。", "writingSentence": "物語は思わぬ方向にテンカイした。", "distractorReadings": ["てんがい", "でんかい"], "altKanji": null, "id": "k116"}, {"word": "発芽", "reading": "はつが", "meaning": "種から芽が出ること。", "example": "種をまいて一週間で発芽した。", "writingSentence": "種をまいて数日でハツガした。", "distractorReadings": ["はつめ", "ほつが"], "altKanji": null, "id": "k117"}, {"word": "無造作", "reading": "むぞうさ", "meaning": "特に気を使わず、簡単に物事を行うこと。", "example": "彼は本を無造作に机に置いた。", "writingSentence": "彼はかばんをムゾウサに投げ出した。", "distractorReadings": ["ぶぞうさ", "むぞうさく"], "altKanji": null, "id": "k118"}, {"word": "模型", "reading": "もけい", "meaning": "実物をまねて、小さく作ったもの。", "example": "飛行機の模型を作る。", "writingSentence": "電車のモケイを組み立てる。", "distractorReadings": ["ぼけい", "もがた"], "altKanji": null, "id": "k119"}, {"word": "模様", "reading": "もよう", "meaning": "布や物の表面にある、色や形の飾り。", "example": "花の模様がついた服。", "writingSentence": "着物にきれいなモヨウがある。", "distractorReadings": ["ぼよう", "もじょう"], "altKanji": null, "id": "k120"}, {"word": "臨む", "reading": "のぞむ", "meaning": "ある場面や出来事に、その気持ちで向き合うこと。", "example": "試験に真剣な気持ちで臨む。", "writingSentence": "決勝戦にノゾム選手たち。", "distractorReadings": ["りんむ", "のずむ"], "altKanji": null, "id": "k121"}, {"word": "家屋", "reading": "かおく", "meaning": "人が住むための建物、家のこと。", "example": "古い家屋が並ぶ町並み。", "writingSentence": "地震でカオクが傷んだ。", "distractorReadings": ["いえや", "かや"], "altKanji": null, "id": "k122"}, {"word": "会心", "reading": "かいしん", "meaning": "期待どおりにうまくいって、満足する気持ち。", "example": "会心の出来栄えだ。", "writingSentence": "カイシンの一撃で勝利した。", "distractorReadings": ["えしん", "かいごころ"], "altKanji": null, "id": "k123"}, {"word": "割いて", "reading": "さいて", "meaning": "全体の一部を分けて、他のことに使うこと。", "example": "忙しい中、時間を割いて手伝う。", "writingSentence": "忙しい中、時間をサイテ手伝ってくれた。", "distractorReadings": ["わいて", "かっいて"], "altKanji": null, "id": "k124"}, {"word": "寒暖", "reading": "かんだん", "meaning": "寒さと暖かさ、気温の変化のこと。", "example": "寒暖の差が大きい季節。", "writingSentence": "一日のカンダンの差が大きい。", "distractorReadings": ["さむあたたか", "かんおん"], "altKanji": null, "id": "k125"}, {"word": "幹", "reading": "みき", "meaning": "木の中心となる、太い部分。", "example": "大きな木の幹に触れる。", "writingSentence": "この木のミキはとても太い。", "distractorReadings": ["かん", "えだ"], "altKanji": null, "id": "k126"}, {"word": "看病", "reading": "かんびょう", "meaning": "病気の人のそばで、世話をすること。", "example": "熱を出した弟を看病する。", "writingSentence": "熱を出した妹をカンビョウする。", "distractorReadings": ["かんぺい", "みびょう"], "altKanji": null, "id": "k127"}, {"word": "観察", "reading": "かんさつ", "meaning": "物事の様子を、注意深く見ること。", "example": "植物の成長を観察する。", "writingSentence": "アサガオの成長をカンサツする。", "distractorReadings": ["かんざつ", "みさつ"], "altKanji": null, "id": "k128"}, {"word": "帰省", "reading": "きせい", "meaning": "故郷に帰って、家族に会うこと。", "example": "お盆に帰省する。", "writingSentence": "夏休みに田舎へキセイする。", "distractorReadings": ["きしょう", "かえりせい"], "altKanji": null, "id": "k129"}, {"word": "救済", "reading": "きゅうさい", "meaning": "困っている人を、助けること。", "example": "被災者を救済する活動。", "writingSentence": "被災地の人々をキュウサイする。", "distractorReadings": ["すくいざい", "きゅうざい"], "altKanji": null, "id": "k130"}, {"word": "群がる", "reading": "むらがる", "meaning": "たくさんのものが、一か所に集まること。", "example": "花に蝶が群がる。", "writingSentence": "花の蜜に蝶がムラガル。", "distractorReadings": ["ぐんがる", "むれがる"], "altKanji": null, "id": "k131"}, {"word": "健やか", "reading": "すこやか", "meaning": "体が丈夫で、元気なこと。", "example": "健やかに育つことを願う。", "writingSentence": "子どもがスコヤカに育つ。", "distractorReadings": ["けんやか", "たっしゃか"], "altKanji": null, "id": "k132"}, {"word": "憲法", "reading": "けんぽう", "meaning": "国の政治の基本を定めた、最も重要な法律。", "example": "日本国憲法について学ぶ。", "writingSentence": "日本国ケンポウについて学ぶ。", "distractorReadings": ["けんぼう", "げんぽう"], "altKanji": null, "id": "k133"}, {"word": "故障", "reading": "こしょう", "meaning": "機械などが、正常に動かなくなること。", "example": "パソコンが故障した。", "writingSentence": "冷蔵庫がコショウしてしまった。", "distractorReadings": ["こじょう", "こそう"], "altKanji": null, "id": "k134"}, {"word": "誤解", "reading": "ごかい", "meaning": "相手の言葉や気持ちを、間違って理解すること。", "example": "誤解を解くために話し合う。", "writingSentence": "友達とのゴカイを解いた。", "distractorReadings": ["ごげ", "ごかん"], "altKanji": null, "id": "k135"}, {"word": "雑木林", "reading": "ぞうきばやし", "meaning": "いろいろな種類の木が生えている林。", "example": "雑木林の中を散歩する。", "writingSentence": "家の裏にゾウキバヤシが広がる。", "distractorReadings": ["ざつきばやし", "ざつもくりん"], "altKanji": null, "id": "k136"}, {"word": "捨てる", "reading": "すてる", "meaning": "いらない物を、取り除いて手放すこと。", "example": "ごみを捨てる。", "writingSentence": "使わない物をステル。", "distractorReadings": ["しゃてる", "すつる"], "altKanji": null, "id": "k137"}, {"word": "借りる", "reading": "かりる", "meaning": "人の物やお金を、一時的に使わせてもらうこと。", "example": "図書館で本を借りる。", "writingSentence": "友達に消しゴムをカリル。", "distractorReadings": ["しゃくりる", "かしりる"], "altKanji": null, "id": "k138"}, {"word": "取捨", "reading": "しゅしゃ", "meaning": "必要なものを取り、いらないものを捨てること。", "example": "情報を取捨選択する。", "writingSentence": "情報をシュシャ選択する。", "distractorReadings": ["とりすて", "しゅうしゃ"], "altKanji": null, "id": "k139"}, {"word": "習慣", "reading": "しゅうかん", "meaning": "長い間繰り返して、身についた行動や決まり。", "example": "早起きの習慣をつける。", "writingSentence": "早寝早起きのシュウカンをつける。", "distractorReadings": ["しゅっかん", "しゅうがん"], "altKanji": null, "id": "k140"}, {"word": "除く", "reading": "のぞく", "meaning": "不要なものを、取り去ること。", "example": "雑草を取り除く。", "writingSentence": "危険物をノゾク作業をする。", "distractorReadings": ["じょく", "のぞむ"], "altKanji": null, "id": "k141"}, {"word": "承知", "reading": "しょうち", "meaning": "相手の言うことを聞き入れて、分かること。", "example": "その件は承知しました。", "writingSentence": "ご依頼の件、ショウチいたしました。", "distractorReadings": ["じょうち", "しょうじ"], "altKanji": null, "id": "k142"}, {"word": "垂らす", "reading": "たらす", "meaning": "液体などを、上から下へ落とすようにすること。", "example": "傷口に薬を垂らす。", "writingSentence": "傷口に消毒液をタラス。", "distractorReadings": ["すいらす", "たれらす"], "altKanji": null, "id": "k143"}, {"word": "勢い", "reading": "いきおい", "meaning": "物事が進む力や、盛んな様子。", "example": "川の水が勢いよく流れる。", "writingSentence": "台風がイキオイを増して近づく。", "distractorReadings": ["せいい", "いきよい"], "altKanji": null, "id": "k144"}, {"word": "成績", "reading": "せいせき", "meaning": "勉強やスポーツなどの、出来ばえの結果。", "example": "テストの成績が上がった。", "writingSentence": "今学期のセイセキが上がった。", "distractorReadings": ["せいせい", "じょうせき"], "altKanji": null, "id": "k145"}, {"word": "清潔", "reading": "せいけつ", "meaning": "汚れがなく、きれいなこと。", "example": "部屋を清潔に保つ。", "writingSentence": "台所をいつもセイケツに保つ。", "distractorReadings": ["せいきよ", "きよけつ"], "altKanji": null, "id": "k146"}, {"word": "責める", "reading": "せめる", "meaning": "人の失敗や過ちを、非難すること。", "example": "失敗した友人を責めない。", "writingSentence": "失敗した友達をセメルのはよくない。", "distractorReadings": ["せきめる", "しめる"], "altKanji": null, "id": "k147"}, {"word": "窓", "reading": "まど", "meaning": "光や風を通すために、壁に開けた部分。", "example": "窓を開けて空気を入れる。", "writingSentence": "マドを開けて風を入れる。", "distractorReadings": ["そう", "まと"], "altKanji": null, "id": "k148"}, {"word": "尊い", "reading": "とうとい", "meaning": "非常に大切で、価値があること。", "example": "命は尊いものだ。", "writingSentence": "命はトウトイものだ。", "distractorReadings": ["そんい", "たかとい"], "altKanji": "貴い", "id": "k149"}, {"word": "担う", "reading": "になう", "meaning": "責任や仕事を、引き受けること。", "example": "次の時代を担う若者。", "writingSentence": "次の時代をニナウ若者たち。", "distractorReadings": ["たんう", "かつぐ"], "altKanji": null, "id": "k150"}, {"word": "地域", "reading": "ちいき", "meaning": "ある広がりを持った土地やその範囲のこと。", "example": "この地域には古いお寺が多い。", "writingSentence": "この学校はチイキの人々に愛されている。", "distractorReadings": ["ちいく", "じいき"], "altKanji": null, "id": "k151"}, {"word": "納得", "reading": "なっとく", "meaning": "話を聞いて、なるほどと理解し認めること。", "example": "彼の説明を聞いて納得した。", "writingSentence": "彼はその説明でナットクした。", "distractorReadings": ["のうとく", "なつとく"], "altKanji": null, "id": "k152"}, {"word": "反らす", "reading": "そらす", "meaning": "体や物を後ろの方へ曲げること。", "example": "猫が背中を反らす。", "writingSentence": "猫が背中をソラス。", "distractorReadings": ["はんらす", "そらせる"], "altKanji": null, "id": "k153"}, {"word": "奮起", "reading": "ふんき", "meaning": "気持ちを奮い立たせて、やる気を出すこと。", "example": "負けて悔しさから奮起した。", "writingSentence": "彼は失敗をばねにフンキした。", "distractorReadings": ["ふるき", "ふんおこり"], "altKanji": null, "id": "k154"}, {"word": "訪問", "reading": "ほうもん", "meaning": "人の家や場所を訪ねて行くこと。", "example": "友達の家を訪問した。", "writingSentence": "先生の家をホウモンした。", "distractorReadings": ["ほうぶん", "とうもん"], "altKanji": null, "id": "k155"}, {"word": "豊富", "reading": "ほうふ", "meaning": "物や量がたくさんあって豊かなこと。", "example": "この店は品ぞろえが豊富だ。", "writingSentence": "この土地は資源がホウフだ。", "distractorReadings": ["ほうとみ", "とよふ"], "altKanji": null, "id": "k156"}, {"word": "由来", "reading": "ゆらい", "meaning": "物事が始まったもとや、いわれのこと。", "example": "この祭りの由来を調べた。", "writingSentence": "地名のユライを調べる。", "distractorReadings": ["ゆうらい", "よしき"], "altKanji": null, "id": "k157"}, {"word": "要領", "reading": "ようりょう", "meaning": "物事をうまく進めるためのこつや方法。", "example": "彼は仕事の要領がいい。", "writingSentence": "作業のヨウリョウをつかんだ。", "distractorReadings": ["ようれい", "かなめりょう"], "altKanji": null, "id": "k158"}, {"word": "裏", "reading": "うら", "meaning": "物の後ろ側や、見えない部分のこと。", "example": "紙の裏に名前を書く。", "writingSentence": "紙のウラに答えを書いた。", "distractorReadings": ["り", "うち"], "altKanji": null, "id": "k159"}, {"word": "朗報", "reading": "ろうほう", "meaning": "聞いてうれしくなるような、良い知らせ。", "example": "合格の朗報が届いた。", "writingSentence": "合格というロウホウが届いた。", "distractorReadings": ["めいほう", "ろうふう"], "altKanji": null, "id": "k160"}, {"word": "異なる", "reading": "ことなる", "meaning": "他のものと違っていること。", "example": "二人の意見は異なる。", "writingSentence": "二つの答えはコトナル。", "distractorReadings": ["いなる", "いことなる"], "altKanji": null, "id": "k161"}, {"word": "印象", "reading": "いんしょう", "meaning": "見たり聞いたりして心に残った感じ。", "example": "彼は明るい印象の人だ。", "writingSentence": "初対面でよいインショウを持った。", "distractorReadings": ["いんぞう", "いんじょう"], "altKanji": null, "id": "k162"}, {"word": "衛星", "reading": "えいせい", "meaning": "惑星の周りを回る星や、人工の機械。", "example": "人工衛星が地球を回る。", "writingSentence": "気象エイセイが写真を送る。", "distractorReadings": ["えいぼし", "まもりぼし"], "altKanji": null, "id": "k163"}, {"word": "延びる", "reading": "のびる", "meaning": "長さや時間が、もとより長くなること。", "example": "会議の時間が延びる。", "writingSentence": "試合の開始時刻がノビル。", "distractorReadings": ["えんびる", "のばれる"], "altKanji": null, "id": "k164"}, {"word": "往来", "reading": "おうらい", "meaning": "人や車が行ったり来たりすること。", "example": "大通りは人の往来が多い。", "writingSentence": "駅前は人のオウライが激しい。", "distractorReadings": ["おうき", "ゆきき"], "altKanji": null, "id": "k165"}, {"word": "関心", "reading": "かんしん", "meaning": "あることに興味を持つ気持ち。", "example": "環境問題に関心がある。", "writingSentence": "彼は科学にカンシンがある。", "distractorReadings": ["かんじん", "せきごころ"], "altKanji": null, "id": "k166"}, {"word": "挙げる", "reading": "あげる", "meaning": "手や物を高く上げること、または例を示すこと。", "example": "手を挙げて質問する。", "writingSentence": "具体例をアゲル。", "distractorReadings": ["きょげる", "こげる"], "altKanji": null, "id": "k167"}, {"word": "胸", "reading": "むね", "meaning": "体の前の、心臓がある部分。", "example": "胸に手を当てて考える。", "writingSentence": "全力で走ってムネが苦しい。", "distractorReadings": ["きょう", "はら"], "altKanji": null, "id": "k168"}, {"word": "経る", "reading": "へる", "meaning": "時間や場所を、通り過ぎていくこと。", "example": "長い年月を経て完成した。", "writingSentence": "十年の月日をヘル。", "distractorReadings": ["きょうる", "けいる"], "altKanji": null, "id": "k169"}, {"word": "厳か", "reading": "おごそか", "meaning": "重々しくて、きちんとした感じのこと。", "example": "厳かな式典が行われた。", "writingSentence": "オゴソカな雰囲気の中で式が始まった。", "distractorReadings": ["げんか", "きびしか"], "altKanji": null, "id": "k170"}, {"word": "孝行", "reading": "こうこう", "meaning": "親を大切にし、よく尽くすこと。", "example": "親孝行をするために手伝いをする。", "writingSentence": "将来は親にコウコウしたい。", "distractorReadings": ["こうぎょう", "たかゆき"], "altKanji": null, "id": "k171"}, {"word": "構える", "reading": "かまえる", "meaning": "ある姿勢や態度をとって、準備すること。", "example": "カメラを構えて写真を撮る。", "writingSentence": "バットをカマエル。", "distractorReadings": ["こうえる", "こうまえる"], "altKanji": null, "id": "k172"}, {"word": "降る", "reading": "ふる", "meaning": "雨や雪などが、空から落ちてくること。", "example": "今日は雨が降る。", "writingSentence": "明日は雪がフル予報だ。", "distractorReadings": ["こうる", "さがる"], "altKanji": null, "id": "k173"}, {"word": "支持", "reading": "しじ", "meaning": "ある意見や人を、よいと認めて助けること。", "example": "多くの人がその案を支持した。", "writingSentence": "その意見をシジする人が多い。", "distractorReadings": ["ししん", "しちじ"], "altKanji": null, "id": "k174"}, {"word": "資源", "reading": "しげん", "meaning": "物を作るもとになる材料や、自然の恵み。", "example": "石油は貴重な資源だ。", "writingSentence": "日本はシゲンが少ない国だ。", "distractorReadings": ["ししげん", "しみなもと"], "altKanji": null, "id": "k175"}, {"word": "車窓", "reading": "しゃそう", "meaning": "電車や車の窓のこと。", "example": "車窓から景色を眺める。", "writingSentence": "シャソウからきれいな山が見えた。", "distractorReadings": ["くるまど", "しゃまど"], "altKanji": null, "id": "k176"}, {"word": "首脳", "reading": "しゅのう", "meaning": "国や団体を代表する、いちばん上の立場の人。", "example": "各国の首脳が集まる会議が開かれた。", "writingSentence": "各国のシュノウが集まった。", "distractorReadings": ["しゅうのう", "くびのう"], "altKanji": null, "id": "k177"}, {"word": "就任", "reading": "しゅうにん", "meaning": "新しい役目や仕事に就くこと。", "example": "新しい社長が就任した。", "writingSentence": "新会長がシュウニンした。", "distractorReadings": ["しゅにん", "つくにん"], "altKanji": null, "id": "k178"}, {"word": "縦横", "reading": "じゅうおう", "meaning": "たてとよこ、あちこち自由自在なこと。", "example": "選手がコートを縦横に走り回る。", "writingSentence": "選手がジュウオウに動き回る。", "distractorReadings": ["たてよこ", "じゅうこう"], "altKanji": null, "id": "k179"}, {"word": "縮む", "reading": "ちぢむ", "meaning": "大きさや長さが、小さく短くなること。", "example": "セーターが洗濯で縮む。", "writingSentence": "洗ったらシャツがチヂム。", "distractorReadings": ["しゅくむ", "ちじむ"], "altKanji": null, "id": "k180"}, {"word": "整える", "reading": "ととのえる", "meaning": "乱れをなくして、きちんとした状態にすること。", "example": "出かける前に部屋を整える。", "writingSentence": "出発前に身支度をトトノエル。", "distractorReadings": ["せいえる", "せいとのえる"], "altKanji": null, "id": "k181"}, {"word": "宣伝", "reading": "せんでん", "meaning": "商品や考えを、多くの人に広めて知らせること。", "example": "新しいゲームの宣伝を見た。", "writingSentence": "新商品のセンデンを流す。", "distractorReadings": ["せんつたえ", "ぜんでん"], "altKanji": null, "id": "k182"}, {"word": "届いた", "reading": "とどいた", "meaning": "送った物や気持ちが、相手のところに着いたこと。", "example": "荷物が家に届いた。", "writingSentence": "手紙がトドイタ。", "distractorReadings": ["とどけた", "とういた"], "altKanji": null, "id": "k183"}, {"word": "拝借", "reading": "はいしゃく", "meaning": "人の物を、へりくだって借りること。", "example": "お手洗いを拝借します。", "writingSentence": "お知恵をハイシャクしたい。", "distractorReadings": ["はいじゃく", "おがみかり"], "altKanji": null, "id": "k184"}, {"word": "必死", "reading": "ひっし", "meaning": "命がけで、全力を尽くすこと。", "example": "必死に走ってバスに間に合った。", "writingSentence": "ヒッシに勉強して合格した。", "distractorReadings": ["ひつし", "ひっさく"], "altKanji": null, "id": "k185"}, {"word": "閉口", "reading": "へいこう", "meaning": "困り果てて、どうしようもなくなること。", "example": "彼のわがままには閉口した。", "writingSentence": "あまりのわがままにヘイコウした。", "distractorReadings": ["へいくち", "とじぐち"], "altKanji": null, "id": "k186"}, {"word": "便乗", "reading": "びんじょう", "meaning": "人の機会や勢いを、うまく利用すること。", "example": "友達の車に便乗させてもらった。", "writingSentence": "話題にビンジョウして宣伝する。", "distractorReadings": ["べんじょう", "べんのり"], "altKanji": null, "id": "k187"}, {"word": "保管", "reading": "ほかん", "meaning": "物を大切に、なくさないようにしまっておくこと。", "example": "大事な書類を保管する。", "writingSentence": "貴重品はきちんとホカンする。", "distractorReadings": ["ほうかん", "たもちかん"], "altKanji": null, "id": "k188"}, {"word": "報いる", "reading": "むくいる", "meaning": "受けた恩や努力に見合うことを、返すこと。", "example": "努力に報いる結果が出た。", "writingSentence": "恩にムクイルために頑張る。", "distractorReadings": ["ほういる", "ほうじる"], "altKanji": null, "id": "k189"}, {"word": "郵送", "reading": "ゆうそう", "meaning": "郵便で、物や手紙を送ること。", "example": "書類を郵送する。", "writingSentence": "申込書をユウソウする。", "distractorReadings": ["ゆうおくり", "ゆそう"], "altKanji": null, "id": "k190"}, {"word": "臨時", "reading": "りんじ", "meaning": "決まった時ではなく、必要な時だけ行うこと。", "example": "臨時のバスが出た。", "writingSentence": "リンジのニュースが流れた。", "distractorReadings": ["りんとき", "のぞみじ"], "altKanji": null, "id": "k191"}, {"word": "安否", "reading": "あんぴ", "meaning": "無事かどうか、元気かどうかということ。", "example": "家族の安否を確認する。", "writingSentence": "被災地の人々のアンピを確認する。", "distractorReadings": ["あんい", "あんふ"], "altKanji": null, "id": "k192"}, {"word": "画策", "reading": "かくさく", "meaning": "こっそりと計画を立てて、事を進めようとすること。", "example": "裏で画策する人がいた。", "writingSentence": "彼は裏でカクサクしていた。", "distractorReadings": ["がさく", "えさく"], "altKanji": null, "id": "k193"}, {"word": "巻く", "reading": "まく", "meaning": "紐や布などを、くるくると回してつけること。", "example": "マフラーを首に巻く。", "writingSentence": "包帯を腕にマク。", "distractorReadings": ["けんく", "かんく"], "altKanji": null, "id": "k194"}, {"word": "規律", "reading": "きりつ", "meaning": "集団の中で守るべき、決まりや秩序。", "example": "クラスの規律を守る。", "writingSentence": "部活のキリツを守る。", "distractorReadings": ["きろく", "ぎりつ"], "altKanji": null, "id": "k195"}, {"word": "興奮", "reading": "こうふん", "meaning": "気持ちが高ぶって、落ち着かなくなること。", "example": "試合を見て興奮した。", "writingSentence": "ゴールの瞬間、観客はコウフンした。", "distractorReadings": ["きょうふん", "こうぶん"], "altKanji": null, "id": "k196"}, {"word": "勤勉", "reading": "きんべん", "meaning": "仕事や勉強に、真面目に励むこと。", "example": "彼は勤勉な学生だ。", "writingSentence": "彼はとてもキンベンな性格だ。", "distractorReadings": ["きんめん", "つとめべん"], "altKanji": null, "id": "k197"}, {"word": "筋", "reading": "すじ", "meaning": "細長く続く線や、物語のあらすじのこと。", "example": "話の筋を説明する。", "writingSentence": "話のスジが通っている。", "distractorReadings": ["きん", "けい"], "altKanji": null, "id": "k198"}, {"word": "誤り", "reading": "あやまり", "meaning": "正しくないこと、まちがい。", "example": "計算に誤りがあった。", "writingSentence": "答えにアヤマリを見つけた。", "distractorReadings": ["ごり", "あやまち"], "altKanji": null, "id": "k199"}, {"word": "効率", "reading": "こうりつ", "meaning": "使った力や時間に対して、得られる成果の割合。", "example": "効率よく作業を進める。", "writingSentence": "コウリツよく勉強する方法を考える。", "distractorReadings": ["こうそつ", "きくりつ"], "altKanji": null, "id": "k200"}, {"word": "工面", "reading": "くめん", "meaning": "苦労して、お金や物を用意すること。", "example": "旅行費用を工面する。", "writingSentence": "何とかお金をクメンした。", "distractorReadings": ["こうめん", "こうづら"], "altKanji": null, "id": "k201"}, {"word": "細心", "reading": "さいしん", "meaning": "細かいところまで、気をつけること。", "example": "細心の注意を払って作業する。", "writingSentence": "サイシンの注意を払って実験する。", "distractorReadings": ["ほそしん", "さいごころ"], "altKanji": null, "id": "k202"}, {"word": "際限", "reading": "さいげん", "meaning": "物事の終わりや、区切りのこと。", "example": "彼の欲望には際限がない。", "writingSentence": "彼の要求にはサイゲンがない。", "distractorReadings": ["さいかぎり", "きわげん"], "altKanji": null, "id": "k203"}, {"word": "刷新", "reading": "さっしん", "meaning": "古いものを、新しくすること。", "example": "会社の制度を刷新する。", "writingSentence": "組織をサッシンする。", "distractorReadings": ["さつしん", "すりしん"], "altKanji": null, "id": "k204"}, {"word": "参拝", "reading": "さんぱい", "meaning": "神社やお寺に行って、お参りすること。", "example": "初詣に参拝した。", "writingSentence": "元日に神社にサンパイした。", "distractorReadings": ["さんばい", "まいりはい"], "altKanji": null, "id": "k205"}, {"word": "散策", "reading": "さんさく", "meaning": "とくに目的を決めず、のんびり歩くこと。", "example": "公園を散策する。", "writingSentence": "休日に近くの森をサンサクした。", "distractorReadings": ["さんぽさく", "ちりさく"], "altKanji": null, "id": "k206"}, {"word": "収める", "reading": "おさめる", "meaning": "物をきちんとしまう、または良い結果を得ること。", "example": "成功を収める。", "writingSentence": "箱の中に道具をオサメル。", "distractorReadings": ["しゅうめる", "とりおさめる"], "altKanji": null, "id": "k207"}, {"word": "従順", "reading": "じゅうじゅん", "meaning": "素直で、人の言うことをよく聞くこと。", "example": "その犬はとても従順だ。", "writingSentence": "この犬はジュウジュンで飼いやすい。", "distractorReadings": ["したがいじゅん", "じゅうすなお"], "altKanji": null, "id": "k208"}, {"word": "準備", "reading": "じゅんび", "meaning": "前もって、必要な物や心構えをそろえておくこと。", "example": "遠足の準備をする。", "writingSentence": "明日の遠足のジュンビをする。", "distractorReadings": ["じゅんそなえ", "せつび"], "altKanji": null, "id": "k209"}, {"word": "盛る", "reading": "もる", "meaning": "器に、食べ物などをたくさん入れること。", "example": "ご飯を茶碗に盛る。", "writingSentence": "皿にサラダをモル。", "distractorReadings": ["せいる", "じょうる"], "altKanji": null, "id": "k210"}, {"word": "銭湯", "reading": "せんとう", "meaning": "お金を払って入る、お風呂屋さんのこと。", "example": "家族で銭湯に行った。", "writingSentence": "近所のセントウに行く。", "distractorReadings": ["ぜにゆ", "せんゆ"], "altKanji": null, "id": "k211"}, {"word": "創造", "reading": "そうぞう", "meaning": "新しいものを、初めて作り出すこと。", "example": "創造力を働かせて絵を描く。", "writingSentence": "新しい商品をソウゾウする。", "distractorReadings": ["そうざつ", "さくぞう"], "altKanji": null, "id": "k212"}, {"word": "操る", "reading": "あやつる", "meaning": "物や人を、思い通りに動かすこと。", "example": "糸で人形を操る。", "writingSentence": "糸で人形をアヤツル。", "distractorReadings": ["そうる", "みさおる"], "altKanji": null, "id": "k213"}, {"word": "対照", "reading": "たいしょう", "meaning": "二つの物を比べて、違いをはっきりさせること。", "example": "兄と弟は性格が対照的だ。", "writingSentence": "二人の性格はいいタイショウだ。", "distractorReadings": ["たいしょ", "たいてらし"], "altKanji": null, "id": "k214"}, {"word": "忠告", "reading": "ちゅうこく", "meaning": "相手のためを思って、注意やアドバイスをすること。", "example": "友達に忠告する。", "writingSentence": "先生からチュウコクを受けた。", "distractorReadings": ["ちゅうごく", "ちゅうこう"], "altKanji": null, "id": "k215"}, {"word": "都合", "reading": "つごう", "meaning": "物事の具合や、ちょうどよいかどうかということ。", "example": "明日は都合が悪い。", "writingSentence": "今日はツゴウが悪くて行けない。", "distractorReadings": ["とごう", "みやこあい"], "altKanji": null, "id": "k216"}, {"word": "脳裏", "reading": "のうり", "meaning": "心や、頭の中のこと。", "example": "あの光景が脳裏に焼き付いている。", "writingSentence": "あの日の記憶がノウリに浮かぶ。", "distractorReadings": ["のううら", "なやみうら"], "altKanji": null, "id": "k217"}, {"word": "背景", "reading": "はいけい", "meaning": "物事の後ろにある景色や、事件の裏の事情。", "example": "事件の背景を調べる。", "writingSentence": "事件のハイケイを調べる。", "distractorReadings": ["せけい", "はいきょう"], "altKanji": null, "id": "k218"}, {"word": "発展", "reading": "はってん", "meaning": "物事が、より良く大きく進んでいくこと。", "example": "町が発展する。", "writingSentence": "この地域は急速にハッテンした。", "distractorReadings": ["はつてん", "ほってん"], "altKanji": null, "id": "k219"}, {"word": "秘密", "reading": "ひみつ", "meaning": "他人に知られたくないと、隠しておくこと。", "example": "これは二人だけの秘密だ。", "writingSentence": "それはふたりだけのヒミツだ。", "distractorReadings": ["ひめつ", "ひびつ"], "altKanji": null, "id": "k220"}, {"word": "粉", "reading": "こな", "meaning": "細かく砕けた、さらさらした粒のもの。", "example": "小麦粉でパンを作る。", "writingSentence": "小麦のコナでパンを作る。", "distractorReadings": ["ふん", "こう"], "altKanji": null, "id": "k221"}, {"word": "放つ", "reading": "はなつ", "meaning": "閉じ込めていたものを自由にする、また光や音などを出すこと。", "example": "弓で矢を放つ。", "writingSentence": "鳥を空にハナツ。", "distractorReadings": ["ほうつ", "はなす"], "altKanji": null, "id": "k222"}, {"word": "棒", "reading": "ぼう", "meaning": "まっすぐで細長い、木や金属などの物。", "example": "棒を使って支える。", "writingSentence": "長いボウで物を支える。", "distractorReadings": ["ぼん", "ほう"], "altKanji": null, "id": "k223"}, {"word": "留守", "reading": "るす", "meaning": "家の人が外出していて、家にいないこと。", "example": "母は今、留守にしている。", "writingSentence": "両親は今、ルスだ。", "distractorReadings": ["りゅうしゅ", "とめもり"], "altKanji": null, "id": "k224"}, {"word": "因果", "reading": "いんが", "meaning": "原因と、その結果が結びついていること。", "example": "因果関係を調べる。", "writingSentence": "努力と成功のインガ関係を考える。", "distractorReadings": ["いんか", "げんいんか"], "altKanji": null, "id": "k225"}, {"word": "映す", "reading": "うつす", "meaning": "光や物の形を、鏡やスクリーンなどに現すこと。", "example": "鏡に自分の顔を映す。", "writingSentence": "鏡に顔をウツス。", "distractorReadings": ["えいす", "うつる"], "altKanji": null, "id": "k226"}, {"word": "沿岸", "reading": "えんがん", "meaning": "海や川に沿った陸地のこと。", "example": "台風が沿岸に近づいている。", "writingSentence": "台風がエンガンに接近している。", "distractorReadings": ["えんきし", "そいがん"], "altKanji": null, "id": "k227"}, {"word": "機会", "reading": "きかい", "meaning": "何かをするのにちょうどよいときのこと。", "example": "勉強する機会がなかった。", "writingSentence": "留学するキカイをつかんだ。", "distractorReadings": ["きえ", "はたかい"], "altKanji": null, "id": "k228"}, {"word": "吸う", "reading": "すう", "meaning": "空気や水などを口や鼻から体の中に取り入れること。", "example": "深く息を吸う。", "writingSentence": "ストローでジュースをスウ。", "distractorReadings": ["きゅうう", "すいう"], "altKanji": null, "id": "k229"}, {"word": "供給", "reading": "きょうきゅう", "meaning": "必要な物やお金を相手に与えること。", "example": "工場に部品を供給する。", "writingSentence": "工場に部品をキョウキュウする。", "distractorReadings": ["くきゅう", "ともきゅう"], "altKanji": null, "id": "k230"}, {"word": "業績", "reading": "ぎょうせき", "meaning": "仕事や事業で成し遂げた結果のこと。", "example": "会社の業績が伸びた。", "writingSentence": "今年の会社のギョウセキが上がった。", "distractorReadings": ["ぎょうしゃく", "ごうせき"], "altKanji": null, "id": "k231"}, {"word": "君臨", "reading": "くんりん", "meaning": "王様のように、ある分野で強い力を持って支配すること。", "example": "彼はその業界に君臨している。", "writingSentence": "彼はスポーツ界にクンリンしている。", "distractorReadings": ["きみりん", "くんじん"], "altKanji": null, "id": "k232"}, {"word": "景色", "reading": "けしき", "meaning": "山や海など、目に見える自然のながめのこと。", "example": "山の上からの景色がきれいだ。", "writingSentence": "山頂からのケシキはすばらしかった。", "distractorReadings": ["けいしょく", "けいいろ"], "altKanji": null, "id": "k233"}, {"word": "警笛", "reading": "けいてき", "meaning": "危険を知らせるために鳴らす笛や音のこと。", "example": "車が警笛を鳴らした。", "writingSentence": "電車がケイテキを鳴らした。", "distractorReadings": ["けいふえ", "きょうてき"], "altKanji": null, "id": "k234"}, {"word": "見聞", "reading": "けんぶん", "meaning": "実際に見たり聞いたりして得た知識のこと。", "example": "旅行で見聞を広める。", "writingSentence": "海外旅行でケンブンを広めた。", "distractorReadings": ["みきき", "けんもん"], "altKanji": null, "id": "k235"}, {"word": "険悪", "reading": "けんあく", "meaning": "雰囲気や関係が険しく、今にも争いが起こりそうな様子。", "example": "二人の間の空気が険悪になった。", "writingSentence": "会議の雰囲気がケンアクになった。", "distractorReadings": ["けわしあく", "けんお"], "altKanji": null, "id": "k236"}, {"word": "源", "reading": "みなもと", "meaning": "物事が始まるもと、川の流れ始める場所のこと。", "example": "この川の源は山の中にある。", "writingSentence": "この川のミナモトは深い山の中にある。", "distractorReadings": ["げん", "もと"], "altKanji": null, "id": "k237"}, {"word": "呼吸", "reading": "こきゅう", "meaning": "息を吸ったりはいたりすること。", "example": "深呼吸をして落ち着く。", "writingSentence": "深くコキュウして、心を落ち着けた。", "distractorReadings": ["よびすい", "こすい"], "altKanji": null, "id": "k238"}, {"word": "故郷", "reading": "こきょう", "meaning": "自分が生まれ育った場所のこと。", "example": "夏休みに故郷へ帰る。", "writingSentence": "お盆にコキョウへ帰った。", "distractorReadings": ["こごう", "こきょ"], "altKanji": null, "id": "k239"}, {"word": "困難", "reading": "こんなん", "meaning": "物事をするのがとても難しく、大変なこと。", "example": "この問題を解くのは困難だ。", "writingSentence": "その仕事は完成させるのがコンナンだった。", "distractorReadings": ["こまなん", "なんこん"], "altKanji": null, "id": "k240"}, {"word": "砂糖", "reading": "さとう", "meaning": "料理やお菓子を甘くするための白い粉状の食品。", "example": "コーヒーに砂糖を入れる。", "writingSentence": "紅茶にサトウを入れて飲んだ。", "distractorReadings": ["しゃとう", "さと"], "altKanji": null, "id": "k241"}, {"word": "裁つ", "reading": "たつ", "meaning": "布などを型に合わせて切ること。", "example": "布を裁って洋服を作る。", "writingSentence": "着物の布をタツ。", "distractorReadings": ["さいつ", "たちきる"], "altKanji": null, "id": "k242"}, {"word": "察知", "reading": "さっち", "meaning": "物事の様子を感じ取って気づくこと。", "example": "危険を察知して逃げた。", "writingSentence": "犬は危険をサッチして吠えた。", "distractorReadings": ["さつち", "さっし"], "altKanji": null, "id": "k243"}, {"word": "支障", "reading": "ししょう", "meaning": "物事を行う上でじゃまになること。", "example": "仕事に支障が出る。", "writingSentence": "体調不良で仕事にシショウが出た。", "distractorReadings": ["ししょ", "しさわり"], "altKanji": null, "id": "k244"}, {"word": "支度", "reading": "したく", "meaning": "何かをする前に必要な準備をすること。", "example": "出かける支度をする。", "writingSentence": "明日の遠足のシタクをする。", "distractorReadings": ["しど", "しどう"], "altKanji": "仕度", "id": "k245"}, {"word": "飼う", "reading": "かう", "meaning": "動物にえさを与えて育てること。", "example": "家で犬を飼っている。", "writingSentence": "家で犬をカウことにした。", "distractorReadings": ["しう", "かおう"], "altKanji": null, "id": "k246"}, {"word": "除去", "reading": "じょきょ", "meaning": "いらないものを取り除くこと。", "example": "汚れを除去する。", "writingSentence": "シミをジョキョする洗剤を使った。", "distractorReadings": ["じょこ", "のぞきょ"], "altKanji": null, "id": "k247"}, {"word": "生息", "reading": "せいそく", "meaning": "動物がある場所にすんでいること。", "example": "この川には魚が生息している。", "writingSentence": "この森には多くの動物がセイソクしている。", "distractorReadings": ["しょうそく", "いきそく"], "altKanji": null, "id": "k248"}, {"word": "積む", "reading": "つむ", "meaning": "物を重ねて置いたり、荷物をのせたりすること。", "example": "トラックに荷物を積む。", "writingSentence": "トラックに荷物をツム。", "distractorReadings": ["せきむ", "つもる"], "altKanji": null, "id": "k249"}, {"word": "折半", "reading": "せっぱん", "meaning": "費用や物などを半分ずつに分けること。", "example": "食事代を折半する。", "writingSentence": "友達と代金をセッパンした。", "distractorReadings": ["おりはん", "せつはん"], "altKanji": null, "id": "k250"}, {"word": "束ねる", "reading": "たばねる", "meaning": "いくつかのものを一つにまとめて結ぶこと。", "example": "新聞紙をひもで束ねる。", "writingSentence": "古新聞をひもでタバネル。", "distractorReadings": ["そくねる", "たばする"], "altKanji": null, "id": "k251"}, {"word": "尊敬", "reading": "そんけい", "meaning": "相手の人がらや行いをすぐれていると思い、うやまう気持ち。", "example": "先生を尊敬している。", "writingSentence": "私は祖父をソンケイしている。", "distractorReadings": ["たっとけい", "そんきょう"], "altKanji": null, "id": "k252"}, {"word": "担ぐ", "reading": "かつぐ", "meaning": "物を肩にのせて運ぶこと。", "example": "みこしを担いで歩く。", "writingSentence": "おみこしをみんなでカツグ。", "distractorReadings": ["たんぐ", "になぐ"], "altKanji": null, "id": "k253"}, {"word": "断る", "reading": "ことわる", "meaning": "相手の頼みや誘いを受け入れないと伝えること。", "example": "誘いを断る。", "writingSentence": "友達の誘いをコトワル。", "distractorReadings": ["だんる", "たつわる"], "altKanji": null, "id": "k254"}, {"word": "展覧", "reading": "てんらん", "meaning": "作品などを並べて人々に見せること。", "example": "展覧会に絵を出す。", "writingSentence": "美術館でテンラン会が開かれた。", "distractorReadings": ["てんかん", "てんらく"], "altKanji": null, "id": "k255"}, {"word": "討論", "reading": "とうろん", "meaning": "あるテーマについて意見を出し合い、話し合うこと。", "example": "クラスで討論を行う。", "writingSentence": "クラスでトウロンを行った。", "distractorReadings": ["とうりん", "とろん"], "altKanji": null, "id": "k256"}, {"word": "難しい", "reading": "むずかしい", "meaning": "簡単にはできない、理解しにくいこと。", "example": "この問題は難しい。", "writingSentence": "この数学の問題はムズカシイ。", "distractorReadings": ["なんしい", "かたしい"], "altKanji": null, "id": "k257"}, {"word": "能率", "reading": "のうりつ", "meaning": "仕事などが、どれだけ効率よく進むかということ。", "example": "作業の能率を上げる。", "writingSentence": "新しい機械で作業のノウリツが上がった。", "distractorReadings": ["のうそつ", "のりつ"], "altKanji": null, "id": "k258"}, {"word": "反社", "reading": "はんしゃ", "meaning": "社会のルールに従わず、害を与える組織や人のこと。", "example": "反社との取引を禁止する。", "writingSentence": "その会社はハンシャとの関わりを否定した。", "distractorReadings": ["はんじゃ", "ほんしゃ"], "altKanji": null, "id": "k259"}, {"word": "晩秋", "reading": "ばんしゅう", "meaning": "秋の終わりごろの季節のこと。", "example": "晩秋の紅葉がきれいだ。", "writingSentence": "バンシュウの冷たい風が吹いていた。", "distractorReadings": ["ばんあき", "まんしゅう"], "altKanji": null, "id": "k260"}, {"word": "非難", "reading": "ひなん", "meaning": "人の失敗や欠点を責めて悪く言うこと。", "example": "彼の無責任な行動が非難された。", "writingSentence": "彼の無責任な発言がヒナンされた。", "distractorReadings": ["はいなん", "ひかたし"], "altKanji": null, "id": "k261"}, {"word": "標識", "reading": "ひょうしき", "meaning": "道路などに立てて、決まりや情報を知らせる印のこと。", "example": "道路標識に従って運転する。", "writingSentence": "交通ヒョウシキをよく見て運転する。", "distractorReadings": ["ひょうしり", "ひょうそ"], "altKanji": null, "id": "k262"}, {"word": "不思議", "reading": "ふしぎ", "meaning": "どうしてそうなるのか、理由がよくわからないこと。", "example": "不思議な出来事が起こった。", "writingSentence": "空に虹が二重にかかっていて、フシギな光景だった。", "distractorReadings": ["ぶしぎ", "ふしい"], "altKanji": null, "id": "k263"}, {"word": "富む", "reading": "とむ", "meaning": "財産や才能などが豊かにあること。", "example": "彼は経験に富む人だ。", "writingSentence": "彼は表現力にトム作家だ。", "distractorReadings": ["ふむ", "とんむ"], "altKanji": null, "id": "k264"}, {"word": "貿易", "reading": "ぼうえき", "meaning": "外国と品物を売り買いすること。", "example": "日本は多くの国と貿易している。", "writingSentence": "日本は外国とボウエキを行っている。", "distractorReadings": ["ぼうい", "もうえき"], "altKanji": null, "id": "k265"}, {"word": "枚挙", "reading": "まいきょ", "meaning": "一つ一つ数え上げること。", "example": "その例は枚挙にいとまがない。", "writingSentence": "彼の功績はマイキョにいとまがない。", "distractorReadings": ["まいこ", "まいあげ"], "altKanji": null, "id": "k266"}, {"word": "明朗", "reading": "めいろう", "meaning": "性格が明るくほがらかなこと。", "example": "彼は明朗な性格だ。", "writingSentence": "彼女はいつもメイロウな性格だ。", "distractorReadings": ["めいらん", "あかろう"], "altKanji": null, "id": "k267"}, {"word": "郵便", "reading": "ゆうびん", "meaning": "手紙や荷物を届ける仕組みのこと。", "example": "郵便で手紙を送る。", "writingSentence": "ユウビンで荷物を送った。", "distractorReadings": ["ゆうべん", "ゆびん"], "altKanji": null, "id": "k268"}, {"word": "預かる", "reading": "あずかる", "meaning": "人の物や子どもなどを、頼まれて一時的に見ておくこと。", "example": "友達の荷物を預かる。", "writingSentence": "友達のかばんをアズカルことになった。", "distractorReadings": ["よかる", "あずける"], "altKanji": null, "id": "k269"}, {"word": "預金", "reading": "よきん", "meaning": "お金を銀行などに預けておくこと。", "example": "銀行に預金する。", "writingSentence": "銀行にヨキンする。", "distractorReadings": ["あずきん", "よこん"], "altKanji": null, "id": "k270"}, {"word": "率先", "reading": "そっせん", "meaning": "人より先に進んで物事を行うこと。", "example": "率先してごみを拾う。", "writingSentence": "彼はソッセンして掃除を始めた。", "distractorReadings": ["りつせん", "そつせん"], "altKanji": null, "id": "k271"}, {"word": "類似", "reading": "るいじ", "meaning": "二つ以上のものがよく似ていること。", "example": "この事件は類似の手口だ。", "writingSentence": "二つの事件にはルイジ点が多い。", "distractorReadings": ["るいに", "たぐいじ"], "altKanji": null, "id": "k272"}, {"word": "朗読", "reading": "ろうどく", "meaning": "文章を声に出してはっきり読むこと。", "example": "詩を朗読する。", "writingSentence": "みんなの前で詩をロウドクした。", "distractorReadings": ["ろうよみ", "らんどく"], "altKanji": null, "id": "k273"}, {"word": "悪寒", "reading": "おかん", "meaning": "熱が出たときなどに感じる、体のぞくぞくする寒気のこと。", "example": "かぜで悪寒がする。", "writingSentence": "熱が出て、体にオカンがした。", "distractorReadings": ["あくかん", "あっかん"], "altKanji": null, "id": "k274"}, {"word": "延長", "reading": "えんちょう", "meaning": "長さや時間などをのばして長くすること。", "example": "試合が延長になった。", "writingSentence": "試合はエンチョウ戦になった。", "distractorReadings": ["のべちょう", "えんじょう"], "altKanji": null, "id": "k275"}, {"word": "感傷", "reading": "かんしょう", "meaning": "物事に心を動かされて、しみじみと悲しく感じること。", "example": "昔の写真を見て感傷にひたる。", "writingSentence": "昔の恋人を思い出してカンショウ的な気持ちになった。", "distractorReadings": ["かんしょ", "かんきず"], "altKanji": null, "id": "k276"}, {"word": "簡潔", "reading": "かんけつ", "meaning": "言葉や文章が短くて、わかりやすいこと。", "example": "簡潔に説明する。", "writingSentence": "要点をカンケツにまとめて話した。", "distractorReadings": ["けんけつ", "かんつぶ"], "altKanji": null, "id": "k277"}, {"word": "起源", "reading": "きげん", "meaning": "物事が始まったおおもとのこと。", "example": "人類の起源を調べる。", "writingSentence": "オリンピックのキゲンは古代ギリシャだ。", "distractorReadings": ["おきげん", "きせん"], "altKanji": null, "id": "k278"}, {"word": "胸中", "reading": "きょうちゅう", "meaning": "心の中で思っていることのこと。", "example": "彼の胸中を察する。", "writingSentence": "彼女のキョウチュウを察して声をかけた。", "distractorReadings": ["むねなか", "きょうじゅう"], "altKanji": null, "id": "k279"}, {"word": "禁物", "reading": "きんもつ", "meaning": "してはいけないと決められていることやもの。", "example": "油断は禁物だ。", "writingSentence": "本番前の油断はキンモツだ。", "distractorReadings": ["きんぶつ", "きんもの"], "altKanji": null, "id": "k280"}, {"word": "厳密", "reading": "げんみつ", "meaning": "細かいところまで正確で、いいかげんでないこと。", "example": "厳密に調べる。", "writingSentence": "実験の結果をゲンミツに調べた。", "distractorReadings": ["きびみつ", "げんびつ"], "altKanji": null, "id": "k281"}, {"word": "告げる", "reading": "つげる", "meaning": "大事なことを相手に知らせること。", "example": "別れを告げる。", "writingSentence": "彼は別れをツゲル決心をした。", "distractorReadings": ["こくげる", "のげる"], "altKanji": null, "id": "k282"}, {"word": "裁判", "reading": "さいばん", "meaning": "裁判所で、争いごとの善悪や正しさを決めること。", "example": "裁判で判決が下る。", "writingSentence": "その事件はサイバンにかけられた。", "distractorReadings": ["さいはん", "たちばん"], "altKanji": null, "id": "k283"}, {"word": "治める", "reading": "おさめる", "meaning": "国や地域などをうまくまとめて支配すること。", "example": "武将が国を治める。", "writingSentence": "武将が国をオサメル。", "distractorReadings": ["じめる", "なおめる"], "altKanji": null, "id": "k284"}, {"word": "樹立", "reading": "じゅりつ", "meaning": "新しい記録や制度などを初めて打ち立てること。", "example": "新記録を樹立する。", "writingSentence": "彼は世界新記録をジュリツした。", "distractorReadings": ["きりつ", "じゅりゅう"], "altKanji": null, "id": "k285"}, {"word": "収拾", "reading": "しゅうしゅう", "meaning": "混乱した物事をうまくまとめて収めること。", "example": "事態の収拾を図る。", "writingSentence": "会議の混乱をシュウシュウする。", "distractorReadings": ["しゅうしょう", "おさひろい"], "altKanji": null, "id": "k286"}, {"word": "祝辞", "reading": "しゅくじ", "meaning": "お祝いの気持ちを伝えるためのあいさつの言葉。", "example": "卒業式で祝辞を述べる。", "writingSentence": "卒業式でシュクジを述べた。", "distractorReadings": ["いわいじ", "しゅくし"], "altKanji": null, "id": "k287"}, {"word": "縮尺", "reading": "しゅくしゃく", "meaning": "実物を地図や図面に表すときの、縮めた割合のこと。", "example": "縮尺1万分の1の地図。", "writingSentence": "この地図のシュクシャクは五万分の一だ。", "distractorReadings": ["ちぢみしゃく", "しゅくせき"], "altKanji": null, "id": "k288"}, {"word": "熟練", "reading": "じゅくれん", "meaning": "長い経験を積んで、物事に慣れて上手なこと。", "example": "熟練の職人が作った器。", "writingSentence": "ジュクレンの職人が丁寧に仕上げた。", "distractorReadings": ["うれれん", "じゅくえん"], "altKanji": null, "id": "k289"}, {"word": "条件", "reading": "じょうけん", "meaning": "何かが成り立つために必要な決まりのこと。", "example": "参加の条件を確認する。", "writingSentence": "参加のジョウケンを確認した。", "distractorReadings": ["じょうげん", "じょうこと"], "altKanji": null, "id": "k290"}, {"word": "説く", "reading": "とく", "meaning": "物事の道理などを、わかりやすく話して伝えること。", "example": "平和の大切さを説く。", "writingSentence": "先生が平和の大切さをトク。", "distractorReadings": ["せつく", "ときあかす"], "altKanji": null, "id": "k291"}, {"word": "専ら", "reading": "もっぱら", "meaning": "そのことだけに集中して行う様子。", "example": "休日は専ら読書をして過ごす。", "writingSentence": "休日はモッパラ読書をして過ごす。", "distractorReadings": ["せんら", "もっぱ"], "altKanji": null, "id": "k292"}, {"word": "洗練", "reading": "せんれん", "meaning": "磨きをかけて、上品で優れたものにすること。", "example": "洗練されたデザインの服。", "writingSentence": "彼女のファッションはとてもセンレンされている。", "distractorReadings": ["あらいれん", "せんねり"], "altKanji": null, "id": "k293"}, {"word": "蔵書", "reading": "ぞうしょ", "meaning": "個人や図書館が持っている本のこと。", "example": "図書館の蔵書を調べる。", "writingSentence": "図書館のゾウショを検索した。", "distractorReadings": ["くらしょ", "ぞうじょ"], "altKanji": null, "id": "k294"}, {"word": "体裁", "reading": "ていさい", "meaning": "物事の見た目やかっこうのこと。", "example": "体裁を整える。", "writingSentence": "書類のテイサイを整えて提出した。", "distractorReadings": ["たいさい", "からださい"], "altKanji": null, "id": "k295"}, {"word": "兆候", "reading": "ちょうこう", "meaning": "何かが起こる前ぶれとなるしるしのこと。", "example": "病気の兆候が現れる。", "writingSentence": "地震の前にチョウコウが現れることがある。", "distractorReadings": ["きざしこう", "ちょうごう"], "altKanji": null, "id": "k296"}, {"word": "定石", "reading": "じょうせき", "meaning": "昔から決まっている、物事のうまい進め方のこと。", "example": "この作戦は経営の定石だ。", "writingSentence": "新商品を出すのはジョウセキのやり方だ。", "distractorReadings": ["ていせき", "じょういし"], "altKanji": null, "id": "k297"}, {"word": "展示", "reading": "てんじ", "meaning": "作品や品物を並べて人に見せること。", "example": "美術館で絵画を展示する。", "writingSentence": "美術館で新しい作品をテンジした。", "distractorReadings": ["てんし", "てんじる"], "altKanji": null, "id": "k298"}, {"word": "徒労", "reading": "とろう", "meaning": "苦労してやったのに、むだになってしまうこと。", "example": "努力が徒労に終わる。", "writingSentence": "彼の努力はトロウに終わった。", "distractorReadings": ["かちろう", "とろ"], "altKanji": null, "id": "k299"}, {"word": "同盟", "reading": "どうめい", "meaning": "同じ目的のために、国や団体が手を結ぶこと。", "example": "二つの国が同盟を結ぶ。", "writingSentence": "二つの国がドウメイを結んだ。", "distractorReadings": ["どうもり", "どうえい"], "altKanji": null, "id": "k300"}], "kotowaza": [{"phrase": "石の上にも三年", "reading": "いしのうえにもさんねん", "meaning": "つらくてもがまん強く続ければ、いつか必ず成功するということ。", "example": "最初はうまくいかなくても、石の上にも三年で続ければきっと上達するよ。", "distractorMeanings": ["小さなことでも積み重ねれば、やがて大きな成果になるということ。", "一度失敗してもくじけず、何度も挑戦し続けるべきだということ。"], "id": "w1"}, {"phrase": "腹を立てる", "reading": "はらをたてる", "meaning": "怒ること。腹が立って感情的になること。", "example": "弟に何度もからかわれて、とうとう腹を立てた。", "distractorMeanings": ["がまんできなくなって泣き出してしまうこと。", "恥ずかしくて顔が真っ赤になること。"], "id": "w2"}, {"phrase": "息をのむ", "reading": "いきをのむ", "meaning": "驚いたり感動したりして、一瞬息を止めること。", "example": "花火の美しさに、思わず息をのんだ。", "distractorMeanings": ["緊張のあまり声が出なくなってしまうこと。", "苦しくて呼吸が乱れ、落ち着かなくなること。"], "id": "w3"}, {"phrase": "舌を巻く", "reading": "したをまく", "meaning": "相手のすごさに非常に驚き、感心すること。", "example": "彼の見事な演奏に、審査員も舌を巻いた。", "distractorMeanings": ["恥ずかしさのあまり、何も言えなくなってしまうこと。", "悔しくて相手に言い返せなくなること。"], "id": "w4"}, {"phrase": "焼け石に水", "reading": "やけいしにみず", "meaning": "少しばかりの努力や助けでは、ほとんど効果がないこと。", "example": "テスト前日に少し勉強しただけでは、焼け石に水だ。", "distractorMeanings": ["苦労した末に、ようやく望みをかなえること。", "ちょっとした油断が、大きな失敗につながるということ。"], "id": "w5"}, {"phrase": "身につける", "reading": "みにつける", "meaning": "知識や技術、習慣などを努力して自分のものにすること。", "example": "毎日練習を重ねて、英会話の力を身につけた。", "distractorMeanings": ["多くの人から信頼され、頼りにされるようになること。", "危険を避けて、慎重に用心しながら行動すること。"], "id": "w6"}, {"phrase": "首をかしげる", "reading": "くびをかしげる", "meaning": "疑問に思ったり、納得できなかったりすること。", "example": "話のつじつまが合わず、みんな首をかしげた。", "distractorMeanings": ["非常に驚いて、思わず言葉を失ってしまうこと。", "恥ずかしくて、うつむいてしまうこと。"], "id": "w7"}, {"phrase": "他山の石", "reading": "たざんのいし", "meaning": "他人のよくない言動も、自分を直す参考にできるということ。", "example": "友達の失敗を他山の石として、自分も気をつけようと思った。", "distractorMeanings": ["他人のやり方をそのまままねれば、良い結果が出るということ。", "一つの手本があれば、それだけで十分だということ。"], "id": "w8"}, {"phrase": "目に余る", "reading": "めにあまる", "meaning": "程度がひどすぎて、黙って見ていられないこと。", "example": "弟のわがままな態度は目に余るものがある。", "distractorMeanings": ["見た目があまりに美しく、深く感動すること。", "忙しすぎて、とても手が回らなくなること。"], "id": "w9"}, {"phrase": "水を差す", "reading": "みずをさす", "meaning": "うまくいっている物事や人間関係の邪魔をすること。", "example": "楽しい雰囲気に水を差すようだが、そろそろ帰る時間だ。", "distractorMeanings": ["困っている人にそっと手を差しのべて助けること。", "相手の機嫌をとって、仲直りしようとすること。"], "id": "w10"}, {"phrase": "目を細める", "reading": "めをほそめる", "meaning": "うれしさやかわいさのあまり、ほほえむこと。", "example": "孫の成長ぶりを見て、祖母は目を細めた。", "distractorMeanings": ["疑わしく思って、じっと相手を見つめること。", "恥ずかしさから、思わず顔をそむけること。"], "id": "w11"}, {"phrase": "青菜に塩", "reading": "あおなにしお", "meaning": "急に元気をなくして、しょげてしまうことのたとえ。", "example": "テストの結果が悪く、彼は青菜に塩といった様子だった。", "distractorMeanings": ["怒りをおさえきれず、感情が爆発してしまうこと。", "少しの助けでは、ほとんど効果がないこと。"], "id": "w12"}, {"phrase": "首をひねる", "reading": "くびをひねる", "meaning": "よく考えても納得がいかず、疑問に思うこと。", "example": "難しい問題に、先生も思わず首をひねった。", "distractorMeanings": ["驚きのあまり、声も出せなくなってしまうこと。", "相手を見下して、ばかにするような態度をとること。"], "id": "w13"}, {"phrase": "手を焼く", "reading": "てをやく", "meaning": "扱いに困り、対応に苦労すること。", "example": "弟のいたずらには、両親も毎日手を焼いている。", "distractorMeanings": ["大変な仕事も途中で投げ出さず、最後までやり遂げること。", "困っている相手に、自分から手助けを申し出ること。"], "id": "w14"}, {"phrase": "立て板に水", "reading": "たていたにみず", "meaning": "つかえることなく、すらすらと話すことのたとえ。", "example": "彼女は立て板に水のように、よどみなく説明してくれた。", "distractorMeanings": ["準備が整わないまま、物事に取りかかってしまうこと。", "わずかな努力では、ほとんど変化が見られないこと。"], "id": "w15"}, {"phrase": "胸を張る", "reading": "むねをはる", "meaning": "自信を持って、堂々とした態度をとること。", "example": "大会で優勝し、胸を張って学校に帰ってきた。", "distractorMeanings": ["恥ずかしさから、思わずうつむいてしまうこと。", "悔しさをこらえて、じっと我慢すること。"], "id": "w16"}, {"phrase": "気がつく", "reading": "きがつく", "meaning": "今まで気づかなかったことに、はっと思い当たること。", "example": "電車に忘れ物をしたことに、駅に着いてから気がついた。", "distractorMeanings": ["相手の気持ちを思いやり、進んで行動すること。", "危険を感じ取って、用心深くなること。"], "id": "w17"}, {"phrase": "石橋を叩いて渡る", "reading": "いしばしをたたいてわたる", "meaning": "用心の上にも用心を重ねて、物事を行うこと。", "example": "彼は石橋を叩いて渡る性格で、何度も確認してから行動する。", "distractorMeanings": ["つらくてもがまん強く続ければ、いつか成功するということ。", "危険を承知の上で、あえて大きく挑戦すること。"], "id": "w18"}, {"phrase": "耳をかたむける", "reading": "みみをかたむける", "meaning": "注意深く、熱心に人の話を聞くこと。", "example": "生徒たちは先生の話に耳をかたむけた。", "distractorMeanings": ["相手の言葉を疑って、聞き返すこと。", "人のうわさ話を、なんとなく気にして聞くこと。"], "id": "w19"}, {"phrase": "目を丸くする", "reading": "めをまるくする", "meaning": "非常に驚いた様子を表すこと。", "example": "突然の知らせに、みんな目を丸くして驚いた。", "distractorMeanings": ["うれしさのあまり、思わずほほえむこと。", "怒って相手をにらみつけること。"], "id": "w20"}, {"phrase": "三つ子の魂百まで", "reading": "みつごのたましいひゃくまで", "meaning": "幼いころの性格は、年をとっても変わらないということ。", "example": "三つ子の魂百までというように、彼のきちょうめんさは昔から変わらない。", "distractorMeanings": ["小さな善いおこないも、積み重なれば大きな徳になるということ。", "どんなに得意な人でも、時には失敗することがあるということ。"], "id": "w21"}, {"phrase": "あぶはち取らず", "reading": "あぶはちとらず", "meaning": "二つのものを同時に得ようとして、結局両方とも失敗すること。", "example": "勉強も部活も両立させようとして、あぶはち取らずになってしまった。", "distractorMeanings": ["小さく弱いものでも、それ相応の意地や根性があるということ。", "一度の成功に満足せず、さらに努力を重ねるべきだということ。"], "id": "w22"}, {"phrase": "馬の耳に念仏", "reading": "うまのみみにねんぶつ", "meaning": "意見や忠告をしても、まったく効き目がないこと。", "example": "何度注意しても馬の耳に念仏で、まったく聞き入れてくれない。", "distractorMeanings": ["相手のうそを、すぐに見破ってしまうこと。", "親しい間柄でも、礼儀を忘れてはいけないということ。"], "id": "w23"}, {"phrase": "顔が広い", "reading": "かおがひろい", "meaning": "多くの人と知り合いで、交際範囲が広いこと。", "example": "彼は顔が広く、いろいろな人を紹介してくれる。", "distractorMeanings": ["自分の意見を、遠慮なくはっきり言うこと。", "多くの人から、特別に信頼されていること。"], "id": "w24"}, {"phrase": "かっぱの川流れ", "reading": "かっぱのかわながれ", "meaning": "どんなに得意なことでも、時には失敗することがあるということ。", "example": "泳ぎが得意な彼が溺れかけるとは、まさにかっぱの川流れだ。", "distractorMeanings": ["幼いころの性格は、大人になっても変わらないということ。", "見た目が似ていても、中身はまったく違うということ。"], "id": "w25"}, {"phrase": "馬が合う", "reading": "うまがあう", "meaning": "気持ちや性格が合い、気心の知れた仲であること。", "example": "初めて会ったばかりなのに、彼とはとても馬が合う。", "distractorMeanings": ["互いに助け合いながら、支え合って生きていくこと。", "相手の弱点を見つけ出し、うまく利用すること。"], "id": "w26"}, {"phrase": "口をとがらせる", "reading": "くちをとがらせる", "meaning": "不満そうな顔つきをすること。", "example": "妹は叱られて、口をとがらせていた。", "distractorMeanings": ["驚きのあまり、言葉を失ってしまうこと。", "会話の途中に割り込んで、意見を言うこと。"], "id": "w27"}, {"phrase": "口に出す", "reading": "くちにだす", "meaning": "心の中で思っていることを、実際に言葉にして言うこと。", "example": "思っていることを口に出さないと、相手には伝わらないよ。", "distractorMeanings": ["人の秘密を、こっそり他の人に広めてしまうこと。", "相手の話の途中から、勝手に割り込んで話すこと。"], "id": "w28"}, {"phrase": "弘法にも筆の誤り", "reading": "こうぼうにもふでのあやまり", "meaning": "どんな名人でも、時には失敗することがあるということ。", "example": "名人と呼ばれる人でもミスをするとは、弘法にも筆の誤りだ。", "distractorMeanings": ["幼いころの性格は、年をとっても変わらないということ。", "小さく弱いものにも、それ相応の意地や根性があるということ。"], "id": "w29"}, {"phrase": "手に余る", "reading": "てにあまる", "meaning": "自分の力ではとても処理しきれないこと。", "example": "この仕事は難しすぎて、私の手に余る。", "distractorMeanings": ["程度がひどすぎて、黙って見ていられないこと。", "苦労した末に、ようやく望みのものを手に入れること。"], "id": "w30"}, {"phrase": "手に入れる", "reading": "てにいれる", "meaning": "欲しかった物事を、自分のものにすること。", "example": "ずっと欲しかったゲームを、ついに手に入れた。", "distractorMeanings": ["知識や技術を、努力して自分のものにすること。", "多くの人から、高い評価を得ること。"], "id": "w31"}, {"phrase": "猫に小判", "reading": "ねこにこばん", "meaning": "価値のあるものでも、その良さがわからない人には無駄だということ。", "example": "この専門書を彼にあげても、猫に小判だろう。", "distractorMeanings": ["少しばかりの努力や助けでは、ほとんど効果がないこと。", "立派なものも、数が多いとかえって目立たなくなるということ。"], "id": "w32"}, {"phrase": "寝耳に水", "reading": "ねみみにみず", "meaning": "思いがけない出来事に、非常に驚くことのたとえ。", "example": "急な転校の話を聞いて、まさに寝耳に水だった。", "distractorMeanings": ["意見や忠告をしても、まったく効き目がないこと。", "長い苦労の末に、ついに成功をつかむこと。"], "id": "w33"}, {"phrase": "眉をひそめる", "reading": "まゆをひそめる", "meaning": "不快に思ったり、心配したりして顔をしかめること。", "example": "大きな騒音に、周りの人たちは眉をひそめた。", "distractorMeanings": ["驚きのあまり、目を大きく見開くこと。", "うれしさのあまり、思わずほほえむこと。"], "id": "w34"}, {"phrase": "足を引っ張る", "reading": "あしをひっぱる", "meaning": "他人の成功や物事の進行を邪魔すること。", "example": "チームの足を引っ張らないように、一生懸命練習した。", "distractorMeanings": ["うまくいっていることに割り込んで、水を差すこと。", "危険を避けて、慎重に用心しながら行動すること。"], "id": "w35"}, {"phrase": "一寸の虫にも五分の魂", "reading": "いっすんのむしにもごぶのたましい", "meaning": "どんなに小さく弱いものにも、それ相応の意地や考えがあるということ。", "example": "小さな子供だからと侮ってはいけない、一寸の虫にも五分の魂だ。", "distractorMeanings": ["幼いころの性格は、年をとっても変わらないということ。", "どんな名人でも、時には失敗することがあるということ。"], "id": "w36"}, {"phrase": "雨降って地固まる", "reading": "あめふってじかたまる", "meaning": "もめごとの後は、かえって物事が良い方向に安定するということ。", "example": "けんかをしたけれど、雨降って地固まるで前より仲良くなった。", "distractorMeanings": ["つらくても、がまん強く続ければ必ず成功するということ。", "小さな出来事がきっかけで、大きな問題に発展するということ。"], "id": "w37"}, {"phrase": "口を利く", "reading": "くちをきく", "meaning": "言葉を話すこと。また、人と人の間を取り持つこと。", "example": "先生が口を利いてくれたおかげで、話がまとまった。", "distractorMeanings": ["思っていることを、そのまま言葉に出すこと。", "会話の途中に割り込んで、意見を言うこと。"], "id": "w38"}, {"phrase": "猿も木から落ちる", "reading": "さるもきからおちる", "meaning": "その道の名人でも、時には失敗することがあるということ。", "example": "名人でも失敗するとは、まさに猿も木から落ちるだ。", "distractorMeanings": ["幼いころの性格は、年をとっても変わらないということ。", "二つのものを同時に狙って、結局両方失敗すること。"], "id": "w39"}, {"phrase": "手を貸す", "reading": "てをかす", "meaning": "他人の仕事や作業を手伝うこと。", "example": "重い荷物を運ぶのに、友達が手を貸してくれた。", "distractorMeanings": ["扱いに困り、対応に苦労すること。", "自分の力では、とても処理しきれないこと。"], "id": "w40"}, {"phrase": "ぬかに釘", "reading": "ぬかにくぎ", "meaning": "いくら意見をしても、何の手ごたえも効き目もないことのたとえ。", "example": "何度注意しても、ぬかに釘でまったく直らない。", "distractorMeanings": ["忠告をしても、まったく聞き入れようとしないこと。", "わずかな努力では、大きな変化が見られないこと。"], "id": "w41"}, {"phrase": "のれんに腕押し", "reading": "のれんにうでおし", "meaning": "手ごたえがなく、いくら働きかけても効果がないことのたとえ。", "example": "彼にはいくら言っても、のれんに腕押しでまったく響かない。", "distractorMeanings": ["二つの利益を同時に狙って、結局どちらも失敗すること。", "価値のわからない人には、貴重なものも無意味だということ。"], "id": "w42"}, {"phrase": "鼻が高い", "reading": "はながたかい", "meaning": "得意になって、誇らしく思うこと。", "example": "息子が表彰されて、母親は鼻が高かった。", "distractorMeanings": ["自信を持って、堂々とした態度をとること。", "多くの人と知り合いで、交際範囲が広いこと。"], "id": "w43"}, {"phrase": "どんぐりの背比べ", "reading": "どんぐりのせいくらべ", "meaning": "どれも似たり寄ったりで、特別優れたものがないこと。", "example": "今回の作品はどんぐりの背比べで、優劣がつけにくい。", "distractorMeanings": ["二つのものを同時に得ようとして、両方とも失敗すること。", "どんなに得意なことでも、時には失敗することがあるということ。"], "id": "w44"}, {"phrase": "腹を割る", "reading": "はらをわる", "meaning": "本心をかくさずに、すべて打ち明けること。", "example": "友達と腹を割って、じっくり話し合った。", "distractorMeanings": ["怒りをおさえきれず、感情を表に出すこと。", "相手の話を、注意深く熱心に聞くこと。"], "id": "w45"}, {"phrase": "百聞は一見に如かず", "reading": "ひゃくぶんはいっけんにしかず", "meaning": "何度も人から聞くより、一度自分の目で見る方がよくわかるということ。", "example": "写真より実物を見た方がいいよ、百聞は一見に如かずだから。", "distractorMeanings": ["用心の上にも用心を重ねて、物事を行うべきだということ。", "急ぐときほど、確実で安全な方法を選ぶべきだということ。"], "id": "w46"}, {"phrase": "耳が痛い", "reading": "みみがいたい", "meaning": "自分の欠点を言われて、聞くのがつらいこと。", "example": "母の小言は耳が痛いが、正しいことばかりだ。", "distractorMeanings": ["思いがけない知らせに、非常に驚くこと。", "忠告を聞いても、まったく効き目がないこと。"], "id": "w47"}, {"phrase": "顔から火が出る", "reading": "かおからひがでる", "meaning": "恥ずかしさのあまり、顔が真っ赤になること。", "example": "人前で名前を間違えられ、顔から火が出るほど恥ずかしかった。", "distractorMeanings": ["驚きのあまり、思わず言葉を失ってしまうこと。", "悔しさをじっとこらえて、我慢すること。"], "id": "w48"}, {"phrase": "油を売る", "reading": "あぶらをうる", "meaning": "仕事の途中でむだ話をしたり、なまけたりすること。", "example": "買い物の帰りに油を売っていて、遅くなってしまった。", "distractorMeanings": ["休む間もなく、忙しく立ち働くこと。", "人にうまく取り入って、利益を得ようとすること。"], "id": "w49"}, {"phrase": "耳にする", "reading": "みみにする", "meaning": "話や音を、たまたま聞くこと。", "example": "教室でうわさを耳にして、少し驚いた。", "distractorMeanings": ["注意深く、熱心に人の話を聞くこと。", "人の忠告を、素直に受け入れること。"], "id": "w50"}, {"phrase": "肩を落とす", "reading": "かたをおとす", "meaning": "がっかりして、元気をなくすこと。", "example": "試合に負けて、彼は肩を落として帰った。", "distractorMeanings": ["得意になって、誇らしく思うこと。", "恥ずかしさのあまり、顔が真っ赤になること。"], "id": "w51"}, {"phrase": "目にする", "reading": "めにする", "meaning": "あるものを、たまたま見ること。", "example": "街で有名人の姿を目にした。", "distractorMeanings": ["話や音を、たまたま聞くこと。", "驚いたり感動したりして、一瞬息を止めること。"], "id": "w52"}, {"phrase": "目をみはる", "reading": "めをみはる", "meaning": "驚いたり感心したりして、目を大きく見開くこと。", "example": "見事な演技に、観客はみな目をみはった。", "distractorMeanings": ["うれしさのあまり、思わずほほえむこと。", "不快に思って、顔をしかめること。"], "id": "w53"}, {"phrase": "首を長くする", "reading": "くびをながくする", "meaning": "今か今かと、心待ちにして待ち望むこと。", "example": "プレゼントが届くのを、首を長くして待った。", "distractorMeanings": ["疑問に思い、なかなか納得できないこと。", "得意になって、誇らしく思うこと。"], "id": "w54"}, {"phrase": "鶴の一声", "reading": "つるのひとこえ", "meaning": "多くの意見をおさえてまとめてしまう、権威者の一言。", "example": "会議はもめていたが、社長の鶴の一声で決まった。", "distractorMeanings": ["つかえることなく、すらすらと話すことのたとえ。", "意見や忠告をしても、まったく効き目がないこと。"], "id": "w55"}, {"phrase": "足が出る", "reading": "あしがでる", "meaning": "予算や収入よりも、支出のほうが多くなること。", "example": "旅行の費用がかさんで、思わず足が出てしまった。", "distractorMeanings": ["他人の物事の進行を、邪魔してしまうこと。", "自分の力では、とても処理しきれないこと。"], "id": "w56"}, {"phrase": "情けは人のためならず", "reading": "なさけはひとのためならず", "meaning": "人に親切にすれば、いずれ自分に良い報いが返ってくるということ。", "example": "情けは人のためならずというから、困っている人を助けようと思う。", "distractorMeanings": ["もめごとの後は、かえって物事が良い方向に安定するということ。", "人に親切にすると、その人を甘やかすことになるということ。"], "id": "w57"}, {"phrase": "二の足を踏む", "reading": "にのあしをふむ", "meaning": "決心がつかず、ためらってしまうこと。", "example": "値段の高さに、買おうかどうか二の足を踏んでしまった。", "distractorMeanings": ["決心がつかないまま、同じ失敗を繰り返してしまうこと。", "予算よりも、支出のほうが多くなってしまうこと。"], "id": "w58"}, {"phrase": "猫の額", "reading": "ねこのひたい", "meaning": "場所や土地が、非常に狭いことのたとえ。", "example": "うちの庭は猫の額ほどの広さしかない。", "distractorMeanings": ["価値がわからない人には、貴重なものも無意味だということ。", "どれも似たり寄ったりで、特別優れたものがないこと。"], "id": "w59"}, {"phrase": "歯が立たない", "reading": "はがたたない", "meaning": "相手が強すぎて、とても対抗できないこと。", "example": "強豪チームが相手では、まったく歯が立たなかった。", "distractorMeanings": ["自分の力では、とても処理しきれないこと。", "用心の上にも用心を重ねて、物事を行うこと。"], "id": "w60"}, {"phrase": "耳を貸す", "reading": "みみをかす", "meaning": "人の話を、進んで聞こうとすること。", "example": "友達の悩みに、しっかりと耳を貸した。", "distractorMeanings": ["話や音を、たまたま聞いてしまうこと。", "忠告をしても、まったく効き目がないこと。"], "id": "w61"}, {"phrase": "枯れ木も山のにぎわい", "reading": "かれきもやまのにぎわい", "meaning": "つまらないものでも、無いよりはあった方がにぎやかで良いということ。", "example": "枯れ木も山のにぎわいというし、少人数でも参加してくれると助かる。", "distractorMeanings": ["どれも似たり寄ったりで、特別優れたものがないこと。", "つまらないものでも、数が多ければ立派に見えるということ。"], "id": "w62"}, {"phrase": "途方に暮れる", "reading": "とほうにくれる", "meaning": "どうしてよいかわからず、困り果ててしまうこと。", "example": "道に迷ってしまい、すっかり途方に暮れた。", "distractorMeanings": ["決心がつかず、ためらってしまうこと。", "がっかりして、元気をなくしてしまうこと。"], "id": "w63"}, {"phrase": "歯に衣着せぬ", "reading": "はにきぬをきせぬ", "meaning": "相手に対して、思ったことを遠慮せずに率直に言うこと。", "example": "彼は歯に衣着せぬ物言いで有名だ。", "distractorMeanings": ["うわさや秘密を、こっそり人に広めてしまうこと。", "会話の途中に割り込んで、意見を言うこと。"], "id": "w64"}, {"phrase": "かわいい子には旅をさせよ", "reading": "かわいいこにはたびをさせよ", "meaning": "子供を甘やかさず、あえて苦労を経験させた方が成長するということ。", "example": "かわいい子には旅をさせよというので、一人でお使いに行かせてみた。", "distractorMeanings": ["幼いころの性格は、大人になっても変わらないということ。", "人に親切にすれば、いずれ自分に良い報いが返るということ。"], "id": "w65"}, {"phrase": "気が置けない", "reading": "きがおけない", "meaning": "遠慮や気づかいが必要なく、心から打ち解けられること。", "example": "彼とは気が置けない仲で、何でも気軽に話せる。", "distractorMeanings": ["油断ができず、常に警戒しておく必要があるということ。", "気持ちや性格が合い、気の合う仲であること。"], "id": "w66"}, {"phrase": "釘を刺す", "reading": "くぎをさす", "meaning": "あとで問題が起きないように、あらかじめ念を押しておくこと。", "example": "遅刻しないようにと、前もって釘を刺しておいた。", "distractorMeanings": ["相手の言動に不満を持ち、強く注意すること。", "いくら働きかけても、まったく手ごたえがないこと。"], "id": "w67"}, {"phrase": "立つ鳥跡をにごさず", "reading": "たつとりあとをにごさず", "meaning": "立ち去る者は、後始末をきちんとしてから去るべきだということ。", "example": "立つ鳥跡を濁さずで、部屋をきれいに片付けてから引っ越した。", "distractorMeanings": ["どうしてよいかわからず、困り果ててしまうこと。", "つまらないものでも、無いよりはあった方が良いということ。"], "id": "w68"}, {"phrase": "二階から目薬", "reading": "にかいからめぐすり", "meaning": "物事が思うようにならず、もどかしくて効き目が薄いことのたとえ。", "example": "遠くから口で指示するだけでは、二階から目薬でうまくいかない。", "distractorMeanings": ["少しばかりの助けや努力では、ほとんど効果がないこと。", "忠告をしても、まったく効き目がないこと。"], "id": "w69"}, {"phrase": "仏の顔も三度", "reading": "ほとけのかおもさんど", "meaning": "どんなに温和な人でも、何度もひどい仕打ちをされれば怒るということ。", "example": "仏の顔も三度というし、優しい先生でもそろそろ怒るだろう。", "distractorMeanings": ["急ぐときほど、確実で安全な方法を選ぶべきだということ。", "立ち去るときは、後始末をきちんとするべきだということ。"], "id": "w70"}, {"phrase": "耳を疑う", "reading": "みみをうたがう", "meaning": "思いがけないことを聞いて、本当かどうか信じられない気持ちになること。", "example": "合格したという知らせを聞いて、思わず耳を疑った。", "distractorMeanings": ["自分の欠点を言われて、聞くのがつらいこと。", "忠告をしても、まったく効き目がないこと。"], "id": "w71"}, {"phrase": "気にする", "reading": "きにする", "meaning": "心配したり、こだわったりすること。", "example": "小さな失敗をいつまでも気にしてしまう。", "distractorMeanings": ["今まで気づかなかったことに、はっと気づくこと。", "遠慮せずに、心から打ち解けられる間柄であること。"], "id": "w72"}, {"phrase": "後の祭り", "reading": "あとのまつり", "meaning": "時期が過ぎてしまい、今さら何をしても手遅れであること。", "example": "準備を怠って失敗したが、今さら悔やんでも後の祭りだ。", "distractorMeanings": ["どうしてよいかわからず、困り果ててしまうこと。", "もめごとの後は、かえって物事が良い方向に安定するということ。"], "id": "w73"}, {"phrase": "急がば回れ", "reading": "いそがばまわれ", "meaning": "急ぐときほど、危険な近道より確実な方法を選ぶ方が結局早いということ。", "example": "急がば回れというから、慣れた安全な道を選んで行こう。", "distractorMeanings": ["つらくても、がまん強く続ければ必ず成功するということ。", "何度も人から聞くより、一度自分の目で見る方がよくわかるということ。"], "id": "w74"}, {"phrase": "口をはさむ", "reading": "くちをはさむ", "meaning": "他人の話の途中に割り込んで、発言すること。", "example": "大人同士の話に、子供が口をはさむものではない。", "distractorMeanings": ["言葉を話すこと。また、人と人の仲を取り持つこと。", "不満そうな顔つきをすること。"], "id": "w75"}, {"phrase": "漁夫の利", "reading": "ぎょふのり", "meaning": "両者が争っている間に、関係のない第三者が苦労せず利益を得ること。", "example": "兄弟がけんかしている間に妹がお菓子を食べてしまい、漁夫の利だった。", "distractorMeanings": ["苦労せずに大きな利益を得ようとして、かえって失敗すること", "仲の良い者同士が協力して利益を分け合うこと"], "id": "w76"}, {"phrase": "千里の道も一歩から", "reading": "せんりのみちもいっぽから", "meaning": "どんなに大きな物事も、小さな第一歩の積み重ねから始まるということ。", "example": "千里の道も一歩からと思って、毎日少しずつ漢字を覚えている。", "distractorMeanings": ["遠くの目標より、まず身近なことを大事にすべきだということ", "一度始めたことは、最後までやり遂げるべきだということ"], "id": "w77"}, {"phrase": "下手の横好き", "reading": "へたのよこずき", "meaning": "上手ではないのに、それが好きで熱心に取り組んでいること。", "example": "絵は下手の横好きだけれど、毎日楽しく描いている。", "distractorMeanings": ["得意なことばかりに時間を使い、苦手を避けてしまうこと", "才能がないことにすぐ気づいて、あきらめてしまうこと"], "id": "w78"}, {"phrase": "水に流す", "reading": "みずにながす", "meaning": "過去のいざこざやもめごとを、なかったことにして許すこと。", "example": "けんかのことはもう水に流して、また仲良くしよう。", "distractorMeanings": ["大切な思い出を忘れないように、心に刻んでおくこと", "悪いうわさをそのまま人に伝えてしまうこと"], "id": "w79"}, {"phrase": "耳をすます", "reading": "みみをすます", "meaning": "音をよく聞き取ろうと、注意深く耳を傾けること。", "example": "森の中で耳をすますと、小鳥の鳴き声が聞こえた。", "distractorMeanings": ["人の話を疑いながら、注意深く聞くこと", "聞きたくない話を、聞こえないふりをすること"], "id": "w80"}, {"phrase": "目につく", "reading": "めにつく", "meaning": "目立って、自然と気づいたり印象に残ったりすること。", "example": "彼女がかぶっている赤い帽子はとても目につく。", "distractorMeanings": ["見たものを、すぐに忘れてしまうこと", "物事の悪い点ばかりを探して指摘すること"], "id": "w81"}, {"phrase": "相づちを打つ", "reading": "あいづちをうつ", "meaning": "相手の話に合わせて、うなずいたり短く返事をしたりすること。", "example": "友達の話に相づちを打ちながら聞いた。", "distractorMeanings": ["相手の意見に強く反対して、言い返すこと", "話の内容を細かく確認するために質問すること"], "id": "w82"}, {"phrase": "足を洗う", "reading": "あしをあらう", "meaning": "悪い仲間や良くない生活から、きっぱりと抜け出すこと。", "example": "彼は不良グループから足を洗って、まじめに勉強を始めた。", "distractorMeanings": ["長い旅から帰って、ゆっくり体を休めること", "疲れた体を休めて、元気を取り戻すこと"], "id": "w83"}, {"phrase": "頭が下がる", "reading": "あたまがさがる", "meaning": "相手の立派な行いに、心から感心し尊敬すること。", "example": "毎日休まず働くお父さんには頭が下がる。", "distractorMeanings": ["恥ずかしくて、人前に出られなくなること", "疲れてしまい、やる気がなくなること"], "id": "w84"}, {"phrase": "帯に短したすきに長し", "reading": "おびにみじかしたすきにながし", "meaning": "中途半端で、どちらの目的にも使いにくく役に立たないこと。", "example": "このひもは帯に短したすきに長しで、結局使わなかった。", "distractorMeanings": ["二つのうち、どちらを選んでも良い結果になるということ", "物がたくさんありすぎて、選ぶのに迷ってしまうこと"], "id": "w85"}, {"phrase": "顔をしかめる", "reading": "かおをしかめる", "meaning": "不快なことや痛みを感じて、まゆをよせて嫌な顔をすること。", "example": "苦い薬を飲んで、思わず顔をしかめた。", "distractorMeanings": ["うれしさのあまり、思わず笑顔になること", "驚いて、目を大きく見開くこと"], "id": "w86"}, {"phrase": "肩をすくめる", "reading": "かたをすくめる", "meaning": "困ったときやあきれたときに、両肩を上げて見せるしぐさ。", "example": "質問に答えられず、彼は肩をすくめた。", "distractorMeanings": ["相手に賛成する気持ちを、態度で表すこと", "緊張して、体をこわばらせること"], "id": "w87"}, {"phrase": "能ある鷹は爪を隠す", "reading": "のうあるたかはつめをかくす", "meaning": "本当に実力のある人は、それをひけらかさず控えめにしているということ。", "example": "彼はとても優秀なのに自慢しない、まさに能ある鷹は爪を隠すだ。", "distractorMeanings": ["危険な相手には、正体を見せないよう用心すべきだということ", "力のある者ほど、他人を厳しく評価するということ"], "id": "w88"}, {"phrase": "木に竹を接ぐ", "reading": "きにたけをつぐ", "meaning": "性質の違うものを無理に組み合わせて、ちぐはぐになること。", "example": "この文章は前後で話がつながらず、木に竹を接いだようだ。", "distractorMeanings": ["古いものを大切に直しながら、長く使い続けること", "二つの良い点を組み合わせて、より良いものにすること"], "id": "w89"}, {"phrase": "鼻にかける", "reading": "はなにかける", "meaning": "自分の能力や持ち物を、自慢げに得意になること。", "example": "テストで満点を取ったことを鼻にかけている。", "distractorMeanings": ["人の意見を軽くあつかい、相手にしないこと", "相手の失敗を、こっそり喜ぶこと"], "id": "w90"}, {"phrase": "鼻につく", "reading": "はなにつく", "meaning": "同じことが続いて嫌になり、うっとうしく感じること。", "example": "彼の自慢話が鼻について、もう聞きたくない。", "distractorMeanings": ["良い香りが漂ってきて、気分が良くなること", "相手の言うことに、すぐ納得してしまうこと"], "id": "w91"}, {"phrase": "耳にたこができる", "reading": "みみにたこができる", "meaning": "同じことを何度も聞かされて、うんざりすること。", "example": "早く寝なさいと耳にたこができるほど言われた。", "distractorMeanings": ["大事な話を聞き逃さないよう、集中すること", "初めて聞く話に、強く興味を持つこと"], "id": "w92"}, {"phrase": "耳をそろえる", "reading": "みみをそろえる", "meaning": "必要なお金を全部きちんとそろえて、用意すること。", "example": "借りたお金は耳をそろえて返した。", "distractorMeanings": ["大勢の意見をまとめて、一つにすること", "相手の言葉に、注意深く耳を傾けること"], "id": "w93"}, {"phrase": "弱り目にたたり目", "reading": "よわりめにたたりめ", "meaning": "困っているときに、さらに悪いことが重なって起こること。", "example": "財布を落とした上に雨にも降られ、弱り目にたたり目だった。", "distractorMeanings": ["悪いことのあとには、必ず良いことが起こるということ", "一度失敗した人は、二度と同じ失敗をしないということ"], "id": "w94"}, {"phrase": "言わぬが花", "reading": "いわぬがはな", "meaning": "はっきり言わない方が、かえって趣があってよいということ。", "example": "その理由は言わぬが花だよ。", "distractorMeanings": ["本当に大切なことは、はっきり伝えるべきだということ", "きれいな言葉より、行動で示すべきだということ"], "id": "w95"}, {"phrase": "一目置く", "reading": "いちもくおく", "meaning": "相手の実力を認めて、敬意をもって一歩ゆずること。", "example": "クラスの誰もが彼の実力に一目置いている。", "distractorMeanings": ["相手を警戒して、距離を置くこと", "自分の意見を主張せず、黙って従うこと"], "id": "w96"}, {"phrase": "転ばぬ先のつえ", "reading": "ころばぬさきのつえ", "meaning": "失敗しないように、前もって用心し準備しておくこと。", "example": "転ばぬ先のつえで、傘を持って出かけた。", "distractorMeanings": ["失敗してもあきらめず、何度も挑戦すること", "危険なことには、最初から関わらないようにすること"], "id": "w97"}, {"phrase": "朱に交われば赤くなる", "reading": "しゅにまじわればあかくなる", "meaning": "人は付き合う相手や環境によって、良くも悪くも影響されるということ。", "example": "朱に交われば赤くなるというから、友達選びは大切だ。", "distractorMeanings": ["良いものと悪いものが混ざると、全体が悪くなるということ", "一度身についた性格は、簡単には変わらないということ"], "id": "w98"}, {"phrase": "背に腹は代えられぬ", "reading": "せにはらはかえられぬ", "meaning": "大事な物事を守るためには、多少の犠牲もやむを得ないということ。", "example": "背に腹は代えられず、貯金を崩して修理代を払った。", "distractorMeanings": ["どちらも同じくらい大切で、選ぶことができないこと", "苦しくても、我慢して耐え続けるべきだということ"], "id": "w99"}, {"phrase": "棚からぼたもち", "reading": "たなからぼたもち", "meaning": "思いがけない幸運が、努力もせずに転がり込んでくること。", "example": "抽選で一等が当たるなんて、棚からぼたもちだ。", "distractorMeanings": ["苦労して手に入れたものほど、価値があるということ", "欲張ると、持っているものまで失ってしまうこと"], "id": "w100"}, {"phrase": "泣き面にはち", "reading": "なきつらにはち", "meaning": "困っているときに、さらに別の災難が重なって起こること。", "example": "遅刻した上に忘れ物もして、泣き面にはちだった。", "distractorMeanings": ["悪いことのあとには、必ず良い報いがあるということ", "一つの心配事のせいで、他のことが手につかなくなること"], "id": "w101"}, {"phrase": "猫をかぶる", "reading": "ねこをかぶる", "meaning": "本当の性格を隠して、おとなしそうなふりをすること。", "example": "彼女は初対面のときは猫をかぶっていた。", "distractorMeanings": ["人のまねをして、得意になっていること", "危険から身を隠して、じっとしていること"], "id": "w102"}, {"phrase": "花より団子", "reading": "はなよりだんご", "meaning": "見た目の美しさより、実際に役立つものの方がよいということ。", "example": "花見に来たのに、花より団子でお弁当ばかり食べていた。", "distractorMeanings": ["見た目が美しいものほど、価値があるということ", "何事も、無駄なく効率よく行うべきだということ"], "id": "w103"}, {"phrase": "的を得る", "reading": "まとをえる", "meaning": "話や指摘が、要点を正確にとらえていること。", "example": "彼の意見はいつも的を得ている。", "distractorMeanings": ["目標に向かって、一生懸命努力すること", "多くの中から、一番良いものを選び出すこと"], "id": "w104"}, {"phrase": "胸をなで下ろす", "reading": "むねをなでおろす", "meaning": "心配していたことが解決して、ほっと安心すること。", "example": "探していた財布が見つかり、胸をなで下ろした。", "distractorMeanings": ["悲しみをこらえて、気持ちを落ち着けること", "相手を気づかって、優しく声をかけること"], "id": "w105"}, {"phrase": "目からうろこが落ちる", "reading": "めからうろこがおちる", "meaning": "何かがきっかけで、急に物事の本質がよく分かるようになること。", "example": "先生の説明を聞いて、目からうろこが落ちた。", "distractorMeanings": ["疲れて、目が開けられないほど眠くなること", "悲しみのあまり、涙が止まらなくなること"], "id": "w106"}, {"phrase": "目を背ける", "reading": "めをそむける", "meaning": "見るのがつらいことから、目をそらして見ないようにすること。", "example": "悲惨な事故現場から、思わず目を背けた。", "distractorMeanings": ["興味のあるものを、じっと見つめ続けること", "相手の顔色をうかがいながら、話すこと"], "id": "w107"}, {"phrase": "意を決する", "reading": "いをけっする", "meaning": "迷いを断ち切り、思い切って心を決めること。", "example": "意を決して、苦手な発表に挑戦した。", "distractorMeanings": ["相手の考えを推し量って、先回りすること", "物事の結果を、じっくり待つこと"], "id": "w108"}, {"phrase": "魚心あれば水心", "reading": "うおごころあればみずごころ", "meaning": "相手が好意を示せば、こちらも好意で応じようという気になるということ。", "example": "魚心あれば水心で、親切にしてくれた人には自分も親切にしたい。", "distractorMeanings": ["環境が変われば、そこに慣れて暮らせるということ", "似た者同士は、自然と集まるということ"], "id": "w109"}, {"phrase": "狐につままれる", "reading": "きつねにつままれる", "meaning": "何が起きたのか分からず、ぼんやりと不思議な気持ちになること。", "example": "置いたはずの物が消えていて、狐につままれたようだった。", "distractorMeanings": ["相手にだまされて、大きな損をしてしまうこと", "恐怖で体がすくんで、動けなくなること"], "id": "w110"}, {"phrase": "木で鼻をくくる", "reading": "きではなをくくる", "meaning": "相手の頼みなどに、そっけなく冷たい態度で対応すること。", "example": "質問したのに、木で鼻をくくったような返事しかもらえなかった。", "distractorMeanings": ["道理に合わないことを、無理に押し通すこと", "見た目だけを整えて、中身をごまかすこと"], "id": "w111"}, {"phrase": "高をくくる", "reading": "たかをくくる", "meaning": "大したことはないと、物事を軽く見て油断すること。", "example": "簡単な問題だと高をくくっていたら、間違えてしまった。", "distractorMeanings": ["相手の実力を認めて、敬意を払うこと", "用心深く、前もって準備をしておくこと"], "id": "w112"}, {"phrase": "鬼の目にも涙", "reading": "おにのめにもなみだ", "meaning": "ふだんは冷酷に見える人でも、時には人情や涙を見せることがあるということ。", "example": "あの厳しい先生が生徒の作文で涙ぐんだ、鬼の目にも涙だ。", "distractorMeanings": ["どんなに辛い状況でも、我慢して涙を見せないこと", "悪いことをした人には、必ず罰が下るということ"], "id": "w113"}, {"phrase": "すずめの涙", "reading": "すずめのなみだ", "meaning": "量がとても少なく、わずかしかないことのたとえ。", "example": "お小遣いはすずめの涙ほどしかもらえなかった。", "distractorMeanings": ["小さな体でも、大きな力を発揮すること", "弱い立場の者が声をあげても、届かないこと"], "id": "w114"}, {"phrase": "竹馬の友", "reading": "ちくばのとも", "meaning": "子どもの頃から一緒に遊んで育った、仲の良い友人のこと。", "example": "彼とは竹馬の友で、今でも仲がいい。", "distractorMeanings": ["苦しい時を共に乗り越えた、大切な仲間のこと", "利害だけでつながっている、表面的な友人のこと"], "id": "w115"}, {"phrase": "手塩にかける", "reading": "てしおにかける", "meaning": "自分で苦労しながら、大切に世話をして育て上げること。", "example": "手塩にかけて育てた息子が、立派に成長した。", "distractorMeanings": ["他人に任せず、自分の力だけで解決すること", "大切なものを、人に見せずに隠しておくこと"], "id": "w116"}, {"phrase": "手に入る", "reading": "てにはいる", "meaning": "欲しかった物が、自分のものになること。", "example": "念願のチケットが、ようやく手に入った。", "distractorMeanings": ["苦労の末に、ようやく目標を達成すること", "相手の弱点を、うまく利用すること"], "id": "w117"}, {"phrase": "出る杭は打たれる", "reading": "でるくいはうたれる", "meaning": "人より目立って優れていると、周りから妬まれ攻撃されやすいということ。", "example": "出る杭は打たれるというが、彼の活躍はねたまれることもあった。", "distractorMeanings": ["実力のある人は、いずれ必ず認められるということ", "何もしない人は、周りから信用されないということ"], "id": "w118"}, {"phrase": "手をこまねく", "reading": "てをこまねく", "meaning": "何もせずに、ただ傍観していること。", "example": "助ける方法が分からず、手をこまねいて見ているしかなかった。", "distractorMeanings": ["忙しくて、休む暇もなく働き続けること", "相手の出方を、じっと待って様子をうかがうこと"], "id": "w119"}, {"phrase": "猫の手も借りたい", "reading": "ねこのてもかりたい", "meaning": "とても忙しく、誰でもいいから手伝ってほしいと思うこと。", "example": "引っ越し当日は猫の手も借りたいほど忙しかった。", "distractorMeanings": ["誰の助けも借りず、自分一人でやり遂げたいこと", "手先が器用で、どんな仕事も上手にこなせること"], "id": "w120"}, {"phrase": "濡れ手で粟", "reading": "ぬれてであわ", "meaning": "苦労せずに、簡単に大きな利益を得ること。", "example": "掘り出し物を安く売ったら高値がつき、濡れ手で粟のもうけだった。", "distractorMeanings": ["こつこつ努力を重ねて、成果を得ること", "お金を使いすぎて、すぐになくなってしまうこと"], "id": "w121"}, {"phrase": "念を押す", "reading": "ねんをおす", "meaning": "間違いがないように、もう一度確かめて注意すること。", "example": "待ち合わせの時間を念を押して確認した。", "distractorMeanings": ["相手の言葉を疑わず、そのまま信じること", "一度決めたことを、絶対に変えないこと"], "id": "w122"}, {"phrase": "鼻で笑う", "reading": "はなでわらう", "meaning": "相手を見下して、ばかにしたように笑うこと。", "example": "彼の言い訳を鼻で笑って聞き流した。", "distractorMeanings": ["恥ずかしさを隠すために、愛想笑いをすること", "面白い話を聞いて、心から楽しく笑うこと"], "id": "w123"}, {"phrase": "鼻を明かす", "reading": "はなをあかす", "meaning": "相手を出し抜いて、あっと驚かせやり込めること。", "example": "いつも自慢する兄の鼻を明かしてやろうと頑張った。", "distractorMeanings": ["相手の自慢を、素直に認めてほめること", "隠していた秘密を、うっかり話してしまうこと"], "id": "w124"}, {"phrase": "腹をくくる", "reading": "はらをくくる", "meaning": "結果がどうであれ引き受けようと、覚悟を決めること。", "example": "失敗してもいいと腹をくくって、発表に臨んだ。", "distractorMeanings": ["怒りをおさえて、表情に出さないようにすること", "相手の言うことに逆らわず、従うこと"], "id": "w125"}, {"phrase": "目を輝かせる", "reading": "めをかがやかせる", "meaning": "期待や喜びで、目を生き生きと輝かせること。", "example": "プレゼントを見て、子どもは目を輝かせた。", "distractorMeanings": ["恐怖で、顔が青ざめてしまうこと", "疲れて、眠そうに目を細めること"], "id": "w126"}, {"phrase": "目をこらす", "reading": "めをこらす", "meaning": "よく見えるように、じっと集中して見つめること。", "example": "暗闇の中、目をこらして足元を確認した。", "distractorMeanings": ["見たくないものから、顔をそむけること", "興味のないことに、ぼんやり目を向けること"], "id": "w127"}, {"phrase": "顔に泥を塗る", "reading": "かおにどろをぬる", "meaning": "相手の名誉を傷つけ、恥をかかせること。", "example": "約束を破って、先生の顔に泥を塗ってしまった。", "distractorMeanings": ["自分の失敗を隠すために、嘘をつくこと", "相手のために、自分を犠牲にして尽くすこと"], "id": "w128"}, {"phrase": "一を聞いて十を知る", "reading": "いちをきいてじゅうをしる", "meaning": "少し聞いただけで、物事の全体をすぐに理解する賢さのこと。", "example": "彼女は一を聞いて十を知るタイプで、説明はいつも一言で済む。", "distractorMeanings": ["一度覚えたことは、決して忘れないということ", "何事も、最初が肝心だということ"], "id": "w129"}, {"phrase": "類は友を呼ぶ", "reading": "るいはともをよぶ", "meaning": "似た性質や趣味を持つ者同士は、自然と集まるということ。", "example": "あの二人が仲がいいのは、類は友を呼ぶからだろう。", "distractorMeanings": ["良い友人を持つと、自分も成長できるということ", "環境が、人の性格を作り上げるということ"], "id": "w130"}, {"phrase": "足を運ぶ", "reading": "あしをはこぶ", "meaning": "わざわざその場所まで、実際に出向いて行くこと。", "example": "何度も図書館に足を運んで、資料を調べた。", "distractorMeanings": ["悪い仲間から、きっぱり離れること", "忙しく動き回って、働くこと"], "id": "w131"}, {"phrase": "医者の不養生", "reading": "いしゃのふようじょう", "meaning": "人には立派なことを言うのに、自分では実行できていないこと。", "example": "早寝早起きをすすめる先生が夜更かしばかり、医者の不養生だ。", "distractorMeanings": ["専門家ほど、基本を大切にするということ", "忙しい人ほど、体調をくずしやすいということ"], "id": "w132"}, {"phrase": "口がかたい", "reading": "くちがかたい", "meaning": "秘密をしっかり守って、他人に話さないこと。", "example": "彼は口がかたいから、悩みを相談しても安心だ。", "distractorMeanings": ["自分の意見をはっきり言わず、遠慮すること", "頑固で、人の意見を聞き入れないこと"], "id": "w133"}, {"phrase": "首を横にふる", "reading": "くびをよこにふる", "meaning": "賛成できないという気持ちを、首を振って示すこと。", "example": "提案に対して、彼は黙って首を横にふった。", "distractorMeanings": ["納得して、相手の意見に同意すること", "疲れて、眠気をこらえること"], "id": "w134"}, {"phrase": "五十歩百歩", "reading": "ごじっぽひゃっぽ", "meaning": "少しの違いはあっても、本質的にはほとんど同じであるということ。", "example": "30点と35点、どちらも五十歩百歩の悪さだ。", "distractorMeanings": ["どちらを選んでも、大きな得はないということ", "努力を続ければ、いつか差がつくということ"], "id": "w135"}, {"phrase": "好きこそものの上手なれ", "reading": "すきこそもののじょうずなれ", "meaning": "好きなことは熱心に取り組むので、自然と上達するということ。", "example": "好きこそものの上手なれで、彼はプログラミングがどんどん上手になった。", "distractorMeanings": ["苦手なことほど、克服する価値があるということ", "上手になるには、才能が一番大切だということ"], "id": "w136"}, {"phrase": "筋が通る", "reading": "すじがとおる", "meaning": "話や考え方に矛盾がなく、道理にかなっていること。", "example": "彼の説明は筋が通っていて、納得できた。", "distractorMeanings": ["相手の意見に反論せず、素直に従うこと", "物事を最後までやり通す、強い意志のこと"], "id": "w137"}, {"phrase": "すずめ百まで踊り忘れず", "reading": "すずめひゃくまでおどりわすれず", "meaning": "小さい頃に身についた習慣や性質は、年をとっても変わらないということ。", "example": "すずめ百まで踊り忘れずで、幼い頃好きだった絵を今も描き続けている。", "distractorMeanings": ["年をとるほど、新しいことを覚えにくくなるということ", "小さな努力の積み重ねが、大きな結果になるということ"], "id": "w138"}, {"phrase": "住めば都", "reading": "すめばみやこ", "meaning": "どんな場所でも、住み慣れれば居心地がよく思えてくるということ。", "example": "田舎に引っ越したが、住めば都で今はとても気に入っている。", "distractorMeanings": ["都会が、一番暮らしやすい場所だということ", "新しい環境には、すぐ慣れるものだということ"], "id": "w139"}, {"phrase": "月とすっぽん", "reading": "つきとすっぽん", "meaning": "見た目は似ていても、比べものにならないほど差があること。", "example": "二人の絵の実力は月とすっぽんだ。", "distractorMeanings": ["仲が悪く、いつもけんかばかりしている間柄のこと", "二つとも同じくらい優れていて、優劣がつけがたいこと"], "id": "w140"}, {"phrase": "手が込む", "reading": "てがこむ", "meaning": "作り方がとても複雑で、細かい工夫がされていること。", "example": "この刺しゅうは手が込んでいて、仕上げに時間がかかった。", "distractorMeanings": ["準備不足で、ものごとが雑になってしまうこと", "簡単な作業を、わざと難しく見せかけること"], "id": "w141"}, {"phrase": "捕らぬ狸の皮算用", "reading": "とらぬたぬきのかわざんよう", "meaning": "まだ手に入っていないものを当てにして、計画を立てること。", "example": "宝くじが当たったら何を買おうかなんて、捕らぬ狸の皮算用だ。", "distractorMeanings": ["手に入れたものを、大切に使わず無駄にすること", "危険を避けるために、慎重に準備をしておくこと"], "id": "w142"}, {"phrase": "虎の威を借る狐", "reading": "とらのいをかるきつね", "meaning": "自分に力がないのに、強い者の力を借りていばること。", "example": "部長の名前を出していばる彼は、まさに虎の威を借る狐だ。", "distractorMeanings": ["弱い者同士が協力して、強い相手に立ち向かうこと", "本当の実力者は、自分の力を隠しているということ"], "id": "w143"}, {"phrase": "手に負えない", "reading": "てにおえない", "meaning": "自分の力では対応できないほど、扱いが難しいこと。", "example": "弟のいたずらは、手に負えないほどひどくなった。", "distractorMeanings": ["苦労して、ようやく目的のものを手に入れること", "忙しくて、他のことに手が回らないこと"], "id": "w144"}, {"phrase": "手を打つ", "reading": "てをうつ", "meaning": "問題が起きないように、前もって対策をとること。", "example": "トラブルになる前に、早めに手を打っておいた。", "distractorMeanings": ["相手の意見に賛成して、拍手をすること", "仕事を途中で投げ出して、あきらめること"], "id": "w145"}, {"phrase": "七転び八起き", "reading": "ななころびやおき", "meaning": "何度失敗してもくじけず、そのたびに立ち直り頑張ること。", "example": "七転び八起きの精神で、あきらめずに練習を続けた。", "distractorMeanings": ["一度の失敗も許されない、厳しい状況のこと", "苦労が多いわりに、実りが少ないこと"], "id": "w146"}, {"phrase": "二兎を追う者は一兎をも得ず", "reading": "にとをおうものはいっとをもえず", "meaning": "同時に二つのことをしようとすると、結局どちらも成功しないということ。", "example": "二兎を追う者は一兎をも得ずというから、まずは一つに集中しよう。", "distractorMeanings": ["目標は、高ければ高いほど良いということ", "一つのことを長く続ければ、必ず成功するということ"], "id": "w147"}, {"phrase": "根も葉もない", "reading": "ねもはもない", "meaning": "まったく事実の裏付けがなく、でたらめであること。", "example": "根も葉もないうわさが広まって困った。", "distractorMeanings": ["小さな出来事が、大きな問題に発展すること", "どこにでも見られる、ありふれた話であること"], "id": "w148"}, {"phrase": "鼻であしらう", "reading": "はなであしらう", "meaning": "相手を見下して、そっけなく冷たく対応すること。", "example": "相談したのに、鼻であしらわれてしまった。", "distractorMeanings": ["相手の話を、最後まで丁寧に聞くこと", "相手の失敗を、優しくフォローすること"], "id": "w149"}, {"phrase": "火に油を注ぐ", "reading": "ひにあぶらをそそぐ", "meaning": "すでに悪い状況を、さらにひどくする行動をとること。", "example": "怒っている人にさらに文句を言うのは、火に油を注ぐようなものだ。", "distractorMeanings": ["危険な状況を、いち早く収めて解決すること", "困っている人に、そっと手を差し伸べること"], "id": "w150"}], "yoji": [{"phrase": "一日千秋", "category": "数字系", "reading": "いちじつせんしゅう", "meaning": "一日が千年に感じられるほど、待ち遠しく思うこと。", "distractorMeanings": ["一つのことをして、同時に二つの利益を得ること。", "何度失敗してもあきらめずに立ち上がること。"], "id": "y1"}, {"phrase": "大同小異", "category": "反対語", "reading": "だいどうしょうい", "meaning": "細かい点は違うが、だいたいは同じであること。", "distractorMeanings": ["たくさんの人が口をそろえて同じことを言うこと。", "人によって考えや好みがそれぞれ違うこと。"], "id": "y2"}, {"phrase": "以心伝心", "category": "同じ漢字", "reading": "いしんでんしん", "meaning": "言葉に出さなくても、気持ちが相手に通じ合うこと。", "distractorMeanings": ["半分は信じ、半分は疑っている状態のこと。", "自分のしたことを自分でほめること。"], "id": "y3"}, {"phrase": "意味深長", "category": "間違えやすい", "reading": "いみしんちょう", "meaning": "言葉の裏に、深い意味がかくされていること。", "distractorMeanings": ["言葉では言い表せないほど、ひどいこと。", "話のはじめから終わりまで、全部のこと。"], "id": "y4"}, {"phrase": "馬耳東風", "category": "動物や色", "reading": "ばじとうふう", "meaning": "人の意見や忠告を聞き流して、気にしないこと。", "distractorMeanings": ["自分の都合の良いように物事を進めること。", "周りに人がいないかのように勝手にふるまうこと。"], "id": "y5"}, {"phrase": "一石二鳥", "category": "数字系", "reading": "いっせきにちょう", "meaning": "一つのことをして、同時に二つの利益を得ること。", "distractorMeanings": ["一日が非常に長く、待ち遠しく感じられること。", "二つとも似たり寄ったりで、大差がないこと。"], "id": "y6"}, {"phrase": "異口同音", "category": "反対語", "reading": "いくどうおん", "meaning": "多くの人が口をそろえて、同じことを言うこと。", "distractorMeanings": ["細かい違いはあるが、だいたい同じであること。", "言葉を使わなくても、心が通じ合うこと。"], "id": "y7"}, {"phrase": "半信半疑", "category": "同じ漢字", "reading": "はんしんはんぎ", "meaning": "半分は信じ、半分は疑っている気持ちのこと。", "distractorMeanings": ["生きるか死ぬかの、ぎりぎりの状態のこと。", "命令や方針が、朝と夕方で変わってしまうこと。"], "id": "y8"}, {"phrase": "言語道断", "category": "間違えやすい", "reading": "ごんごどうだん", "meaning": "あまりにもひどくて、言葉で言い表せないこと。", "distractorMeanings": ["一言で、ずばりと本題に入ること。", "今まで一度も聞いたことがないような出来事。"], "id": "y9"}, {"phrase": "花鳥風月", "category": "動物や色", "reading": "かちょうふうげつ", "meaning": "自然の美しい景色や、風流な趣のこと。", "distractorMeanings": ["白い砂浜と青々とした松林の美しい景色のこと。", "山や川の景色が清らかで、美しいこと。"], "id": "y10"}, {"phrase": "五里霧中", "category": "数字系", "reading": "ごりむちゅう", "meaning": "霧の中にいるように、物事の見通しが立たないこと。", "distractorMeanings": ["状況に応じて、すばやく適切に対応すること。", "非常に危険で、今にも命が危ういような状態。"], "id": "y11"}, {"phrase": "有名無実", "category": "反対語", "reading": "ゆうめいむじつ", "meaning": "名前だけは知られているが、中身がともなわないこと。", "distractorMeanings": ["誰から見ても正しく、公平で立派なこと。", "完全で、欠けているところが全くないこと。"], "id": "y12"}, {"phrase": "絶体絶命", "category": "同じ漢字", "reading": "ぜったいぜつめい", "meaning": "どうにも逃げられない、追いつめられた状況のこと。", "distractorMeanings": ["死にそうな状態から立ち直り、勢いを取り戻すこと。", "苦しくて、転げ回るほどつらいこと。"], "id": "y13"}, {"phrase": "単刀直入", "category": "間違えやすい", "reading": "たんとうちょくにゅう", "meaning": "前置きなしに、いきなり本題に入ること。", "distractorMeanings": ["言葉に表せないほど、ひどい行いのこと。", "昔のことを研究して、新しい知識を得ること。"], "id": "y14"}, {"phrase": "青天白日", "category": "動物や色", "reading": "せいてんはくじつ", "meaning": "よく晴れた空のように、疑いや後ろ暗さが何もないこと。", "distractorMeanings": ["白い砂浜と青い松林が続く、美しい景色のこと。", "ものごとの見通しが、まったく立たないこと。"], "id": "y15"}, {"phrase": "千変万化", "category": "数字系", "reading": "せんぺんばんか", "meaning": "状況が次々に、さまざまな形へ変化していくこと。", "distractorMeanings": ["人によって、好みや考え方がそれぞれ違うこと。", "ものごとの様子が、それぞれ違っていること。"], "id": "y16"}, {"phrase": "一部始終", "category": "反対語", "reading": "いちぶしじゅう", "meaning": "物事の最初から最後までの、全部のこと。", "distractorMeanings": ["半分は信じて、半分は疑っている気持ちのこと。", "命令や方針が、すぐに変わってしまうこと。"], "id": "y17"}, {"phrase": "自画自賛", "category": "同じ漢字", "reading": "じがじさん", "meaning": "自分のしたことを、自分でほめること。", "distractorMeanings": ["言葉を交わさなくても、気持ちが通じ合うこと。", "他人の意見に、自分の考えもなく従うこと。"], "id": "y18"}, {"phrase": "付和雷同", "category": "間違えやすい", "reading": "ふわらいどう", "meaning": "自分の考えを持たず、他人の意見にすぐ同調すること。", "distractorMeanings": ["多くの人が、声をそろえて同じことを言うこと。", "自分に都合よく、物事を運ぼうとすること。"], "id": "y19"}, {"phrase": "南船北馬", "category": "動物や色", "reading": "なんせんほくば", "meaning": "あちこち忙しく旅をして、絶えず移動すること。", "distractorMeanings": ["一つの物事から、同時に二つの利益を得ること。", "状況に合わせて、自由自在に行動を変えること。"], "id": "y20"}, {"phrase": "七転八起", "category": "数字系", "reading": "しちてんはっき", "meaning": "何度失敗しても、あきらめずに立ち上がること。", "distractorMeanings": ["苦しみのあまり、転げ回ってもがき苦しむこと。", "一日一日が、非常に待ち遠しく感じられること。"], "id": "y21"}, {"phrase": "朝令暮改", "category": "反対語", "reading": "ちょうれいぼかい", "meaning": "命令や決まりがすぐに変わって、定まらないこと。", "distractorMeanings": ["始めから終わりまで、態度や方針を変えないこと。", "前後があべこべになり、大事なことを見失うこと。"], "id": "y22"}, {"phrase": "右往左往", "category": "同じ漢字", "reading": "うおうさおう", "meaning": "どうしてよいか分からず、あちこち慌てて動き回ること。", "distractorMeanings": ["縦にも横にも、思うままに自由に動き回ること。", "状況に応じて、適切にすばやく対応すること。"], "id": "y23"}, {"phrase": "臨機応変", "category": "間違えやすい", "reading": "りんきおうへん", "meaning": "その場の状況に応じて、適切に対応すること。", "distractorMeanings": ["どうしてよいか分からず、あちこち動き回ること。", "人に頼らず、自分の力だけで物事を進めること。"], "id": "y24"}, {"phrase": "白砂青松", "category": "動物や色", "reading": "はくしゃせいしょう", "meaning": "白い砂浜と青々とした松が続く、美しい海岸の景色。", "distractorMeanings": ["自然の美しい景色や、風流な趣のこと。", "山や川の景色が清らかで、美しいこと。"], "id": "y25"}, {"phrase": "七転八倒", "category": "数字系", "reading": "しちてんばっとう", "meaning": "激しい苦しみのために、転げ回ってもがくこと。", "distractorMeanings": ["何度失敗しても、くじけずに立ち上がること。", "死にかけた状態から、勢いを取り戻すこと。"], "id": "y26"}, {"phrase": "起死回生", "category": "反対語", "reading": "きしかいせい", "meaning": "絶望的な状態から、一気に良い方向へ立て直すこと。", "distractorMeanings": ["どうにも逃げ場のない、追いつめられた状態のこと。", "危険がすぐそこまで、迫っている状態のこと。"], "id": "y27"}, {"phrase": "誠心誠意", "category": "同じ漢字", "reading": "せいしんせいい", "meaning": "偽りのない、真心のこもった気持ちで物事を行うこと。", "distractorMeanings": ["自分にできることは、自分でまかなうこと。", "生きるか死ぬかの、ぎりぎりの状態のこと。"], "id": "y28"}, {"phrase": "前代未聞", "category": "間違えやすい", "reading": "ぜんだいみもん", "meaning": "今まで一度も聞いたことがないような、珍しい出来事。", "distractorMeanings": ["あまりにひどくて、言葉にできないほどの行い。", "名前は有名だが、実際の中身がともなわないこと。"], "id": "y29"}, {"phrase": "竜頭蛇尾", "category": "動物や色", "reading": "りゅうとうだび", "meaning": "始めは勢いが盛んだが、終わりになるほど衰えること。", "distractorMeanings": ["見た目や名前だけが立派で、中身がともなわないこと。", "状況によって、どんどん姿を変えていくこと。"], "id": "y30"}, {"phrase": "一挙両得", "category": "数字系", "reading": "いっきょりょうとく", "meaning": "一つの行いで、同時に二つの利益を得ること。", "distractorMeanings": ["一日会わないだけで、千年も経ったように感じること。", "十人いれば、十人とも考え方が違うこと。"], "id": "y31"}, {"phrase": "因果応報", "category": "反対語", "reading": "いんがおうほう", "meaning": "良い行いにも悪い行いにも、それにふさわしい報いがあること。", "distractorMeanings": ["昔のことを学んで、新しい知識や考えを得ること。", "強いものが弱いものを支配し、打ち勝つこと。"], "id": "y32"}, {"phrase": "十人十色", "category": "同じ漢字", "reading": "じゅうにんといろ", "meaning": "好みや考え方は、人によってそれぞれ違うこと。", "distractorMeanings": ["細かい点は違っても、だいたいは同じであること。", "状況によって、様々に変化していくこと。"], "id": "y33"}, {"phrase": "付和雷同", "category": "間違えやすい", "reading": "ふわらいどう", "meaning": "自分の考えを持たず、他人の意見にすぐ同調すること。", "distractorMeanings": ["多くの人が、声をそろえて同じことを言うこと。", "自分に都合よく、物事を運ぼうとすること。"], "id": "y34"}, {"phrase": "山紫水明", "category": "動物や色", "reading": "さんしすいめい", "meaning": "山や川の景色が清らかで、美しいこと。", "distractorMeanings": ["白い砂浜と青い松林が続く、美しい海岸の景色。", "自然の美しい景色や、風流な趣のこと。"], "id": "y35"}, {"phrase": "千差万別", "category": "数字系", "reading": "せんさばんべつ", "meaning": "物事にはさまざまな違いがあり、一つ一つ異なること。", "distractorMeanings": ["状況が次々に、いろいろな形へ変わっていくこと。", "好みや考え方は、人によってそれぞれ違うこと。"], "id": "y36"}, {"phrase": "弱肉強食", "category": "反対語", "reading": "じゃくにくきょうしょく", "meaning": "弱い者が強い者の犠牲になる、厳しい生存競争のこと。", "distractorMeanings": ["良い行いにも悪い行いにも、ふさわしい報いがあること。", "周りを気にせず、自分勝手にふるまうこと。"], "id": "y37"}, {"phrase": "自給自足", "category": "同じ漢字", "reading": "じきゅうじそく", "meaning": "必要なものを、自分の力だけでまかなうこと。", "distractorMeanings": ["何にも頼らず、自分の力だけで道を切り開くこと。", "偽りなく、真心をこめて物事に取り組むこと。"], "id": "y38"}, {"phrase": "無我夢中", "category": "間違えやすい", "reading": "むがむちゅう", "meaning": "我を忘れるほど、一つのことに夢中になること。", "distractorMeanings": ["物事の見通しが立たず、どうしてよいか分からないこと。", "苦しくてもがき、転げ回るほどつらいこと。"], "id": "y39"}, {"phrase": "大器晩成", "category": "動物や色", "reading": "たいきばんせい", "meaning": "本当にすぐれた人物は、遅れて成功し実力を発揮すること。", "distractorMeanings": ["名前ばかりで、実際の中身がともなわないこと。", "見かけだけが立派で、内容がともなわないこと。"], "id": "y40"}, {"phrase": "危機一髪", "category": "数字系", "reading": "ききいっぱつ", "meaning": "髪の毛一本ほどの差で、危険が迫っている状態のこと。", "distractorMeanings": ["どうにも逃げられないほど、追いつめられた状況のこと。", "悪い状態から、一気に良い方向へ立て直すこと。"], "id": "y41"}, {"phrase": "終始一貫", "category": "反対語", "reading": "しゅうしいっかん", "meaning": "最初から最後まで、態度や考えを変えないこと。", "distractorMeanings": ["命令や決まりがすぐに変わって、定まらないこと。", "その場の状況に応じて、対応を変えること。"], "id": "y42"}, {"phrase": "適材適所", "category": "同じ漢字", "reading": "てきざいてきしょ", "meaning": "人の能力に合った、ふさわしい仕事や場所につけること。", "distractorMeanings": ["自分の力だけで、必要なものをまかなうこと。", "好みや考え方は、人によってそれぞれ違うこと。"], "id": "y43"}, {"phrase": "老若男女", "category": "間違えやすい", "reading": "ろうにゃくなんにょ", "meaning": "年齢や性別に関係なく、すべての人々のこと。", "distractorMeanings": ["良い行いにも悪い行いにも、報いがあること。", "弱い者が強い者に負けてしまう、厳しい競争。"], "id": "y44"}, {"phrase": "意気投合", "category": "動物や色", "reading": "いきとうごう", "meaning": "お互いの気持ちや考えが、ぴったりと合うこと。", "distractorMeanings": ["言葉を交わさなくても、心が通じ合うこと。", "自分の考えを持たず、他人にすぐ同調すること。"], "id": "y45"}, {"phrase": "一望千里", "category": "数字系", "reading": "いちぼうせんり", "meaning": "一目で見渡せるほど、遠くまで広がる景色のこと。", "distractorMeanings": ["一つの行いで、同時に二つの利益を得ること。", "一日会わないだけで、とても長く感じること。"], "id": "y46"}, {"phrase": "同工異曲", "category": "反対語", "reading": "どうこういきょく", "meaning": "やり方は違うが、出来ばえや内容はほとんど同じであること。", "distractorMeanings": ["細かい点は違うが、だいたいは同じであること。", "多くの人が、口をそろえて同じことを言うこと。"], "id": "y47"}, {"phrase": "自由自在", "category": "同じ漢字", "reading": "じゆうじざい", "meaning": "何ものにも縛られず、思いのままにふるまえること。", "distractorMeanings": ["縦にも横にも、思う存分自由に動き回ること。", "必要なものを、自分の力でまかなうこと。"], "id": "y48"}, {"phrase": "悪口雑言", "category": "間違えやすい", "reading": "あっこうぞうごん", "meaning": "相手を悪く言う、ひどい言葉をあれこれ並べ立てること。", "distractorMeanings": ["あまりにひどくて、言葉で言い表せないこと。", "周りに人がいないかのように、勝手にふるまうこと。"], "id": "y49"}, {"phrase": "公明正大", "category": "動物や色", "reading": "こうめいせいだい", "meaning": "私利私欲がなく、誰から見ても公平で正しいこと。", "distractorMeanings": ["疑いや後ろ暗いところが何もなく、潔白なこと。", "完全で、欠けているところが全くないこと。"], "id": "y50"}, {"phrase": "一進一退", "category": "数字系", "reading": "いっしんいったい", "meaning": "進んだり戻ったりして、なかなか良くならない状態。", "distractorMeanings": ["喜んだり心配したりと、気持ちが揺れ動くこと。", "生きるか死ぬかの、ぎりぎりの状態のこと。"], "id": "y51"}, {"phrase": "天変地異", "category": "反対語", "reading": "てんぺんちい", "meaning": "台風や地震など、自然に起こる激しい異変のこと。", "distractorMeanings": ["状況が次々に、さまざまな形へ変化していくこと。", "今まで一度も聞いたことがないような出来事。"], "id": "y52"}, {"phrase": "独立独歩", "category": "同じ漢字", "reading": "どくりつどっぽ", "meaning": "人に頼らず、自分の力だけで物事を進めていくこと。", "distractorMeanings": ["必要なものを、自分の力だけでまかなうこと。", "その場の状況に応じて、すばやく対応すること。"], "id": "y53"}, {"phrase": "温故知新", "category": "間違えやすい", "reading": "おんこちしん", "meaning": "昔のことを学び直して、新しい知識や考えを見つけること。", "distractorMeanings": ["前置きなしに、いきなり本題に入ること。", "良い行いにも悪い行いにも、報いがあること。"], "id": "y54"}, {"phrase": "我田引水", "category": "動物や色", "reading": "がでんいんすい", "meaning": "自分の都合のよいように、物事を考えたり進めたりすること。", "distractorMeanings": ["人の意見や忠告を聞き流して、気にしないこと。", "自分の考えを持たず、他人の意見にすぐ同調すること。"], "id": "y55"}, {"phrase": "一喜一憂", "category": "数字系", "reading": "いっきいちゆう", "meaning": "状況が変わるたびに、喜んだり心配したりすること。", "distractorMeanings": ["進んだり戻ったりして、なかなか良くならないこと。", "一日会わないだけで、とても長く感じられること。"], "id": "y56"}, {"phrase": "縦横無尽", "category": "反対語", "reading": "じゅうおうむじん", "meaning": "思う存分、自由自在に活躍したり動き回ったりすること。", "distractorMeanings": ["何ものにも縛られず、思いのままにふるまえること。", "どうしてよいか分からず、あちこち動き回ること。"], "id": "y57"}, {"phrase": "半死半生", "category": "同じ漢字", "reading": "はんしはんしょう", "meaning": "今にも死にそうなほど、弱りきっている状態のこと。", "distractorMeanings": ["半分は信じ、半分は疑っている気持ちのこと。", "どうにも逃げられない、追いつめられた状況のこと。"], "id": "y58"}, {"phrase": "順風満帆", "category": "間違えやすい", "reading": "じゅんぷうまんぱん", "meaning": "物事が何の障害もなく、順調に進んでいくこと。", "distractorMeanings": ["始めは勢いが盛んでも、終わりには衰えてしまうこと。", "その場の状況に応じて、すばやく対応すること。"], "id": "y59"}, {"phrase": "急転直下", "category": "動物や色", "reading": "きゅうてんちょっか", "meaning": "物事の状況が急に変化して、一気に解決に向かうこと。", "distractorMeanings": ["絶望的な状態から、一気に良い方向へ立て直すこと。", "危険がすぐそこまで、迫っている状態のこと。"], "id": "y60"}, {"phrase": "四苦八苦", "category": "数字系", "reading": "しくはっく", "meaning": "非常に苦しみ、あれこれ苦労すること。", "distractorMeanings": ["激しい苦しみのために、転げ回ってもがくこと。", "我を忘れるほど、一つのことに夢中になること。"], "id": "y61"}, {"phrase": "本末転倒", "category": "反対語", "reading": "ほんまつてんとう", "meaning": "大事なこととそうでないことを、取り違えてしまうこと。", "distractorMeanings": ["命令や決まりがすぐに変わって、定まらないこと。", "前後があべこべになり、あちこち慌てて動き回ること。"], "id": "y62"}, {"phrase": "再三再四", "category": "同じ漢字", "reading": "さいさんさいし", "meaning": "何度も何度も、繰り返し行うこと。", "distractorMeanings": ["何度失敗しても、あきらめずに立ち上がること。", "進んだり戻ったりして、なかなか良くならないこと。"], "id": "y63"}, {"phrase": "傍若無人", "category": "間違えやすい", "reading": "ぼうじゃくぶじん", "meaning": "周りの人のことを気にせず、勝手気ままにふるまうこと。", "distractorMeanings": ["自分の都合のよいように、物事を進めようとすること。", "あまりにひどくて、言葉で言い表せないこと。"], "id": "y64"}, {"phrase": "完全無欠", "category": "動物や色", "reading": "かんぜんむけつ", "meaning": "欠けているところが全くなく、完璧であること。", "distractorMeanings": ["誰から見ても公平で、私利私欲のないこと。", "名前だけが知られていて、中身がともなわないこと。"], "id": "y65"}, {"phrase": "心機一転", "category": "数字系", "reading": "しんきいってん", "meaning": "あることをきっかけに、気持ちをすっかり入れ替えること。", "distractorMeanings": ["進んだり戻ったりして、なかなか良くならないこと。", "状況が変わるたびに、喜んだり心配したりすること。"], "id": "y66"}, {"phrase": "取捨選択", "category": "反対語", "reading": "しゅしゃせんたく", "meaning": "良いものと悪いものを見分けて、必要なものだけを選び取ること。", "distractorMeanings": ["いろいろな意見を一つにまとめて、結論を出すこと。", "そのときの状況に合わせて、素早く対応を変えること。"], "id": "y67"}, {"phrase": "自業自得", "category": "同じ漢字", "reading": "じごうじとく", "meaning": "自分がした悪い行いの報いを、自分自身が受けること。", "distractorMeanings": ["人の力を借りず、自分のことは自分で行うこと。", "自分で自分のことをほめたたえること。"], "id": "y68"}, {"phrase": "古今東西", "category": "間違えやすい", "reading": "ここんとうざい", "meaning": "昔から今までの、あらゆる場所や時代。いつでもどこでも。", "distractorMeanings": ["東西南北、あらゆる方角のこと。", "昔の出来事を、詳しく調べ直すこと。"], "id": "y69"}, {"phrase": "喜怒哀楽", "category": "動物や色", "reading": "きどあいらく", "meaning": "喜び・怒り・悲しみ・楽しみなど、人間のさまざまな感情。", "distractorMeanings": ["心が静かに澄みきって、落ち着いている様子。", "良いことと悪いことが、次々に入れかわること。"], "id": "y70"}, {"phrase": "一意専心", "category": "数字系", "reading": "いちいせんしん", "meaning": "他のことを考えず、一つのことだけに心を集中してうちこむこと。", "distractorMeanings": ["どんな困難にも心を動かさず、恐れずに立ち向かうこと。", "二人以上の人が心を合わせて、一つになること。"], "id": "y71"}, {"phrase": "昼夜兼行", "category": "反対語", "reading": "ちゅうやけんこう", "meaning": "昼も夜も休まずに、続けて物事を行うこと。", "distractorMeanings": ["眠ることも休むこともせず、物事を続けること。", "目的のために、あちこち忙しく走り回ること。"], "id": "y72"}, {"phrase": "不眠不休", "category": "同じ漢字", "reading": "ふみんふきゅう", "meaning": "眠ることも休むこともせず、物事を続けること。", "distractorMeanings": ["昼も夜も休まずに、続けて物事を行うこと。", "骨身をけずるほど、力の限り努力すること。"], "id": "y73"}, {"phrase": "小春日和", "category": "間違えやすい", "reading": "こはるびより", "meaning": "初冬のころの、春のように暖かくおだやかな天気。", "distractorMeanings": ["冬に、寒い日と暖かい日が交互に続く気候。", "一日中ずっと、同じ状態が続くこと。"], "id": "y74"}, {"phrase": "日進月歩", "category": "動物や色", "reading": "にっしんげっぽ", "meaning": "日ごと、月ごとに、物事がどんどん進歩していくこと。", "distractorMeanings": ["古いものが次々に、新しいものへ入れかわること。", "目的のために、あちこち忙しく走り回ること。"], "id": "y75"}, {"phrase": "一心不乱", "category": "数字系", "reading": "いっしんふらん", "meaning": "一つのことに心を集中し、他のことに気を取られないこと。", "distractorMeanings": ["二人以上の人が心を一つにして、まるで一人のようになること。", "気をゆるめると失敗のもとになるという教え。"], "id": "y76"}, {"phrase": "栄枯盛衰", "category": "反対語", "reading": "えいこせいすい", "meaning": "人や物事が、栄えたり衰えたりを繰り返すこと。", "distractorMeanings": ["離れたり集まったりを、繰り返すこと。", "始めから終わりまで、考え方が変わらないこと。"], "id": "y77"}, {"phrase": "自暴自棄", "category": "同じ漢字", "reading": "じぼうじき", "meaning": "物事がうまくいかず、やけになって自分を粗末に扱うこと。", "distractorMeanings": ["自分がした悪い行いの報いを、自分が受けること。", "自分で自分に問いかけ、自分で答えること。"], "id": "y78"}, {"phrase": "群集心理", "category": "間違えやすい", "reading": "ぐんしゅうしんり", "meaning": "大勢の中にいると、ふだんと違う行動をとってしまう心の動き。", "distractorMeanings": ["人が三人五人と、あちこちに小さく集まっている様子。", "疑う心があると、何でもないことまで恐ろしく感じること。"], "id": "y79"}, {"phrase": "枝葉末節", "category": "動物や色", "reading": "しようまっせつ", "meaning": "物事の中心ではない、細かくてあまり重要でない部分。", "distractorMeanings": ["話や考えの筋道が、きちんと整っていること。", "ほんのわずかな、短い言葉のこと。"], "id": "y80"}, {"phrase": "二束三文", "category": "数字系", "reading": "にそくさんもん", "meaning": "数が多くても、値段がとても安いこと。", "distractorMeanings": ["二つのうち、どちらか一つを選ぶこと。", "わずかな日数、短い時間のたとえ。"], "id": "y81"}, {"phrase": "主客転倒", "category": "反対語", "reading": "しゅかくてんとう", "meaning": "物事の大切さの順序や、立場が逆になってしまうこと。", "distractorMeanings": ["良いことと悪いことが、交互に入れかわること。", "離れたり集まったりを、繰り返すこと。"], "id": "y82"}, {"phrase": "粒粒辛苦", "category": "同じ漢字", "reading": "りゅうりゅうしんく", "meaning": "こつこつと苦労を積み重ねながら、努力すること。", "distractorMeanings": ["骨身をけずるほど、力の限り努力すること。", "何度も頭を下げて、丁寧に謝ったり頼んだりすること。"], "id": "y83"}, {"phrase": "奇想天外", "category": "間違えやすい", "reading": "きそうてんがい", "meaning": "普通では思いつかないような、とても変わった考えのこと。", "distractorMeanings": ["手がかりのないまま、あれこれ試して探し求めること。", "もつれた物事を、みごとに手際よく解決すること。"], "id": "y84"}, {"phrase": "公平無私", "category": "動物や色", "reading": "こうへいむし", "meaning": "自分の利益を考えず、公平に物事を行うこと。", "distractorMeanings": ["飾り気がなくまじめで、心も体もたくましいこと。", "誰に対してもよい顔をして、調子を合わせる人。"], "id": "y85"}, {"phrase": "一朝一夕", "category": "数字系", "reading": "いっちょういっせき", "meaning": "わずかな日数。短い時間のたとえ(多くは打ち消しを伴う)。", "distractorMeanings": ["一生に一度だけの出会いだと思い、大切にすること。", "わずかな時間にも、とても値打ちがあること。"], "id": "y86"}, {"phrase": "首尾一貫", "category": "反対語", "reading": "しゅびいっかん", "meaning": "始めから終わりまで、方針や考え方が変わらないこと。", "distractorMeanings": ["話や考えの筋道が、きちんと整っていること。", "人や物事が、栄えたり衰えたりを繰り返すこと。"], "id": "y87"}, {"phrase": "三三五五", "category": "同じ漢字", "reading": "さんさんごご", "meaning": "人が三人五人と、あちこちに小さなまとまりでいる様子。", "distractorMeanings": ["種類がたくさんあって、さまざまであること。", "一日中、いつも絶えず続いていること。"], "id": "y88"}, {"phrase": "快刀乱麻", "category": "間違えやすい", "reading": "かいとうらんま", "meaning": "もつれた物事を、みごとに手際よく解決すること。", "distractorMeanings": ["物事をためらわず、思い切ってすばやく処理すること。", "手がかりのないまま、あれこれ試して探し求めること。"], "id": "y89"}, {"phrase": "用意周到", "category": "動物や色", "reading": "よういしゅうとう", "meaning": "準備が行き届いていて、手落ちがないこと。", "distractorMeanings": ["手がかりのないまま、あれこれ試して探し求めること。", "度胸があり、何ごとも恐れないこと。"], "id": "y90"}, {"phrase": "二者択一", "category": "数字系", "reading": "にしゃたくいつ", "meaning": "二つのうち、どちらか一つを選ぶこと。", "distractorMeanings": ["良いものと悪いものを見分け、必要なものだけを選び取ること。", "二人以上の人が心を一つにして、一人のようになること。"], "id": "y91"}, {"phrase": "離合集散", "category": "反対語", "reading": "りごうしゅうさん", "meaning": "人や集団が、離れたり集まったりを繰り返すこと。", "distractorMeanings": ["人が三人五人と、あちこちに小さく集まっている様子。", "人や物事が、栄えたり衰えたりを繰り返すこと。"], "id": "y92"}, {"phrase": "自問自答", "category": "同じ漢字", "reading": "じもんじとう", "meaning": "自分で自分に問いかけ、自分で答えること。", "distractorMeanings": ["自分がした悪い行いの報いを、自分が受けること。", "一つの質問に対して、一つずつ答えていくこと。"], "id": "y93"}, {"phrase": "大胆不敵", "category": "間違えやすい", "reading": "だいたんふてき", "meaning": "度胸があり、何ごとも恐れずに立ち向かうこと。", "distractorMeanings": ["一人で千人の敵に対抗できるほど、強く優れていること。", "苦しい状況の中で、必死に戦い抜くこと。"], "id": "y94"}, {"phrase": "暗中模索", "category": "動物や色", "reading": "あんちゅうもさく", "meaning": "手がかりのないまま、あれこれ試して探し求めること。", "distractorMeanings": ["もつれた物事を、みごとに手際よく解決すること。", "普通では思いつかないような、とても変わった考え。"], "id": "y95"}, {"phrase": "一念発起", "category": "数字系", "reading": "いちねんほっき", "meaning": "あることを成しとげようと、固く決意すること。", "distractorMeanings": ["大きな願いごとが、かなうこと。", "一生に一度だけの出会いだと思い、大切にすること。"], "id": "y96"}, {"phrase": "一問一答", "category": "反対語", "reading": "いちもんいっとう", "meaning": "一つの質問に対して、一つずつ答えていくこと。", "distractorMeanings": ["自分で自分に問いかけ、自分で答えること。", "ほんのわずかな、短い言葉のこと。"], "id": "y97"}, {"phrase": "多種多様", "category": "同じ漢字", "reading": "たしゅたよう", "meaning": "種類がたくさんあって、さまざまであること。", "distractorMeanings": ["人が三人五人と、あちこちに小さく集まっている様子。", "二つのうち、どちらか一つを選ぶこと。"], "id": "y98"}, {"phrase": "大願成就", "category": "間違えやすい", "reading": "たいがんじょうじゅ", "meaning": "大きな願いごとが、かなうこと。", "distractorMeanings": ["あることを成しとげようと、固く決意すること。", "やることがすべて、うまくいくこと。"], "id": "y99"}, {"phrase": "起承転結", "category": "動物や色", "reading": "きしょうてんけつ", "meaning": "物語や文章の組み立て方。始まり・展開・変化・まとめの順序。", "distractorMeanings": ["話や考えの筋道が、きちんと整っていること。", "始めから終わりまで、方針が変わらないこと。"], "id": "y100"}, {"phrase": "一騎当千", "category": "数字系", "reading": "いっきとうせん", "meaning": "一人で千人の敵に対抗できるほど、強く優れていること。", "distractorMeanings": ["度胸があり、何ごとも恐れずに立ち向かうこと。", "やることがすべて、うまくいくこと。"], "id": "y101"}, {"phrase": "東奔西走", "category": "反対語", "reading": "とうほんせいそう", "meaning": "目的のために、あちこち忙しく走り回ること。", "distractorMeanings": ["昼も夜も休まずに、続けて物事を行うこと。", "離れたり集まったりを、繰り返すこと。"], "id": "y102"}, {"phrase": "創意工夫", "category": "動物や色", "reading": "そういくふう", "meaning": "新しい考えを出して、いろいろ工夫すること。", "distractorMeanings": ["失敗を重ねながら、正しい方法を見つけていくこと。", "普通では思いつかないような、とても変わった考え。"], "id": "y103"}, {"phrase": "一網打尽", "category": "数字系", "reading": "いちもうだじん", "meaning": "悪人などを、一度に全部つかまえること。", "distractorMeanings": ["一人で千人の敵に対抗できるほど、強く優れていること。", "少し触れただけで爆発しそうな、とても危険な状態。"], "id": "y104"}, {"phrase": "平身低頭", "category": "動物や色", "reading": "へいしんていとう", "meaning": "体を低くして、ひたすら謝ったりお願いしたりすること。", "distractorMeanings": ["何度も頭を下げて、丁寧に謝ったり頼んだりすること。", "気をゆるめて注意を怠ることが、失敗のもとになるという教え。"], "id": "y105"}, {"phrase": "一刻千金", "category": "数字系", "reading": "いっこくせんきん", "meaning": "わずかな時間もとても値打ちがあり、大切であること。", "distractorMeanings": ["千年に一度しかないような、めったにないよい機会。", "一生に一度だけの出会いだと思い、大切にすること。"], "id": "y106"}, {"phrase": "悪戦苦闘", "category": "動物や色", "reading": "あくせんくとう", "meaning": "強い相手や難しい状況の中で、苦しみながら必死に戦うこと。", "distractorMeanings": ["骨身をけずるほど、力の限り努力すること。", "もつれた物事を、みごとに手際よく解決すること。"], "id": "y107"}, {"phrase": "一触即発", "category": "数字系", "reading": "いっしょくそくはつ", "meaning": "少し触れただけで爆発しそうな、とても危険な状態。", "distractorMeanings": ["生き残れるか滅びるかの、とても危険な瀬戸際。", "悪人などを、一度に全部つかまえること。"], "id": "y108"}, {"phrase": "粉骨砕身", "category": "動物や色", "reading": "ふんこつさいしん", "meaning": "骨身をけずるほど、力の限り努力すること。", "distractorMeanings": ["こつこつと苦労を積み重ねながら、努力すること。", "強い相手や難しい状況の中で、必死に戦うこと。"], "id": "y109"}, {"phrase": "八方美人", "category": "数字系", "reading": "はっぽうびじん", "meaning": "誰に対してもよい顔をして、うまく調子を合わせる人。", "distractorMeanings": ["自分の利益を考えず、公平に物事を行うこと。", "誰に対しても、正しく厳しい態度で接する人。"], "id": "y110"}, {"phrase": "金科玉条", "category": "動物や色", "reading": "きんかぎょくじょう", "meaning": "絶対に守らなければならない、大切な決まりや教え。", "distractorMeanings": ["行動するときの、表向きの正当な理由。", "誰も守ることができないほど、難しい決まりごと。"], "id": "y111"}, {"phrase": "一心同体", "category": "数字系", "reading": "いっしんどうたい", "meaning": "二人以上の人が心を一つにして、まるで一人のようになること。", "distractorMeanings": ["一つのことだけに、心を集中してうちこむこと。", "二つのうち、どちらか一つを選ぶこと。"], "id": "y112"}, {"phrase": "試行錯誤", "category": "動物や色", "reading": "しこうさくご", "meaning": "失敗を重ねながら、いろいろ試して正しい方法を見つけること。", "distractorMeanings": ["新しい考えを出して、いろいろ工夫すること。", "手がかりのないまま、あれこれ試して探し求めること。"], "id": "y113"}, {"phrase": "三寒四温", "category": "数字系", "reading": "さんかんしおん", "meaning": "冬に、寒い日が三日ほど、暖かい日が四日ほど交互に続くこと。", "distractorMeanings": ["初冬のころの、春のように暖かくおだやかな天気。", "一日中、いつも絶えず続いていること。"], "id": "y114"}, {"phrase": "電光石火", "category": "動物や色", "reading": "でんこうせっか", "meaning": "稲妻のように、非常にすばやい動きや行動のこと。", "distractorMeanings": ["少し触れただけで爆発しそうな、とても危険な状態。", "わずかな時間にも、とても値打ちがあること。"], "id": "y115"}, {"phrase": "千載一遇", "category": "数字系", "reading": "せんざいいちぐう", "meaning": "千年に一度しかないような、めったにないよい機会。", "distractorMeanings": ["一生に一度だけの出会いだと思い、大切にすること。", "大きな願いごとが、かなうこと。"], "id": "y116"}, {"phrase": "油断大敵", "category": "動物や色", "reading": "ゆだんたいてき", "meaning": "気をゆるめて注意を怠ることは、失敗のもとになるという教え。", "distractorMeanings": ["疑う心があると、何でもないことまで恐ろしく感じること。", "度胸があり、何ごとも恐れずに立ち向かうこと。"], "id": "y117"}, {"phrase": "一期一会", "category": "数字系", "reading": "いちごいちえ", "meaning": "一生に一度だけの出会いだと思い、大切にすること。", "distractorMeanings": ["千年に一度しかないような、めったにないよい機会。", "わずかな時間にも、とても値打ちがあること。"], "id": "y118"}, {"phrase": "理路整然", "category": "動物や色", "reading": "りろせいぜん", "meaning": "話や考えの筋道が、きちんと整っていること。", "distractorMeanings": ["始めから終わりまで、方針や考え方が変わらないこと。", "心が澄みきって、静かに落ち着いている様子。"], "id": "y119"}, {"phrase": "一言半句", "category": "数字系", "reading": "いちごんはんく", "meaning": "ほんのわずかな言葉のこと。", "distractorMeanings": ["わずかな日数。短い時間のたとえ。", "一つの質問に対して、一つずつ答えていくこと。"], "id": "y120"}, {"phrase": "明鏡止水", "category": "動物や色", "reading": "めいきょうしすい", "meaning": "心が澄みきって、静かに落ち着いている様子。", "distractorMeanings": ["喜び・怒り・悲しみ・楽しみなど、人間のさまざまな感情。", "話や考えの筋道が、きちんと整っていること。"], "id": "y121"}, {"phrase": "三拝九拝", "category": "数字系", "reading": "さんぱいきゅうはい", "meaning": "何度も頭を下げて、丁寧にお願いしたり謝ったりすること。", "distractorMeanings": ["体を低くして、ひたすら謝ったりお願いしたりすること。", "こつこつと苦労を積み重ねながら、努力すること。"], "id": "y122"}, {"phrase": "危急存亡", "category": "動物や色", "reading": "ききゅうそんぼう", "meaning": "生き残れるか滅びるかの、とても危険な瀬戸際のこと。", "distractorMeanings": ["少し触れただけで爆発しそうな、とても危険な状態。", "気をゆるめて注意を怠ることが、失敗のもとになるという教え。"], "id": "y123"}, {"phrase": "四六時中", "category": "数字系", "reading": "しろくじちゅう", "meaning": "一日中、いつも。絶えずずっと。", "distractorMeanings": ["冬に、寒い日と暖かい日が交互に続くこと。", "一生に一度だけの出会いだと思い、大切にすること。"], "id": "y124"}, {"phrase": "疑心暗鬼", "category": "動物や色", "reading": "ぎしんあんき", "meaning": "疑う心があると、何でもないことまで恐ろしく感じてしまうこと。", "distractorMeanings": ["気をゆるめて注意を怠ることが、失敗のもとになるという教え。", "生き残れるか滅びるかの、とても危険な瀬戸際。"], "id": "y125"}, {"phrase": "朝三暮四", "category": "数字系", "reading": "ちょうさんぼし", "meaning": "目先の違いにとらわれて、結果が同じことに気づかないこと。", "distractorMeanings": ["冬に、寒い日と暖かい日が交互に続くこと。", "言うことやきまりが、次々に変わって定まらないこと。"], "id": "y126"}, {"phrase": "質実剛健", "category": "動物や色", "reading": "しつじつごうけん", "meaning": "飾り気がなくまじめで、心も体もたくましいこと。", "distractorMeanings": ["自分の利益を考えず、公平に物事を行うこと。", "誰に対してもよい顔をして、うまく調子を合わせる人。"], "id": "y127"}, {"phrase": "一刀両断", "category": "数字系", "reading": "いっとうりょうだん", "meaning": "物事をためらわず、思い切ってすばやく処理すること。", "distractorMeanings": ["もつれた物事を、みごとに手際よく解決すること。", "一人で千人の敵に対抗できるほど、強く優れていること。"], "id": "y128"}, {"phrase": "新陳代謝", "category": "動物や色", "reading": "しんちんたいしゃ", "meaning": "古いものが、次々に新しいものへと入れかわっていくこと。", "distractorMeanings": ["日ごと、月ごとに、物事がどんどん進歩していくこと。", "古いしきたりを、大切に守り続けること。"], "id": "y129"}, {"phrase": "五臓六腑", "category": "数字系", "reading": "ごぞうろっぷ", "meaning": "体の中にある、いろいろな内臓すべてのこと。", "distractorMeanings": ["体中に力がみなぎり、元気いっぱいであること。", "骨身をけずるほど、力の限り努力すること。"], "id": "y130"}, {"phrase": "大義名分", "category": "動物や色", "reading": "たいぎめいぶん", "meaning": "行動するときの、表向きの正当な理由のこと。", "distractorMeanings": ["絶対に守らなければならない、大切な決まりや教え。", "行動の結果として、良い評判を得ること。"], "id": "y131"}, {"phrase": "百発百中", "category": "数字系", "reading": "ひゃっぱつひゃくちゅう", "meaning": "予想やねらいが、すべてぴったり当たること。", "distractorMeanings": ["一人で千人の敵に対抗できるほど、強く優れていること。", "大きな願いごとが、かなうこと。"], "id": "y132"}], "taigigo": [{"a": "積極", "aReading": "せっきょく", "b": "消極", "bReading": "しょうきょく", "note": "自分から進んでやるか、ひかえめになるかの違い", "id": "t1"}, {"a": "進化", "aReading": "しんか", "b": "退化", "bReading": "たいか", "note": "進んで発達するか、後戻りして衰えるか", "id": "t2"}, {"a": "延長", "aReading": "えんちょう", "b": "短縮", "bReading": "たんしゅく", "note": "長くのばすか、短く縮めるかの違い", "id": "t3"}, {"a": "肯定", "aReading": "こうてい", "b": "否定", "bReading": "ひてい", "note": "そうだと認めるか、違うと打ち消すか", "id": "t4"}, {"a": "容易", "aReading": "ようい", "b": "困難", "bReading": "こんなん", "note": "たやすいことか、難しくて大変なことか", "id": "t5"}, {"a": "賛成", "aReading": "さんせい", "b": "反対", "bReading": "はんたい", "note": "よいと認めるか、逆らって認めないか", "id": "t6"}, {"a": "利益", "aReading": "りえき", "b": "損失", "bReading": "そんしつ", "note": "得をするか、損をするかの違い", "id": "t7"}, {"a": "善意", "aReading": "ぜんい", "b": "悪意", "bReading": "あくい", "note": "相手を思うよい心か、傷つけたい悪い心か", "id": "t8"}, {"a": "拡大", "aReading": "かくだい", "b": "縮小", "bReading": "しゅくしょう", "note": "大きくするか、小さくするかの違い", "id": "t9"}, {"a": "安全", "aReading": "あんぜん", "b": "危険", "bReading": "きけん", "note": "危なくないか、危ないかの違い", "id": "t10"}, {"a": "許可", "aReading": "きょか", "b": "禁止", "bReading": "きんし", "note": "してよいと認めるか、してはだめと止めるか", "id": "t11"}, {"a": "過去", "aReading": "かこ", "b": "未来", "bReading": "みらい", "note": "過ぎ去った昔か、これから来る先か", "id": "t12"}, {"a": "原因", "aReading": "げんいん", "b": "結果", "bReading": "けっか", "note": "物事が起こるもとか、その後に起きた事か", "id": "t13"}, {"a": "生産", "aReading": "せいさん", "b": "消費", "bReading": "しょうひ", "note": "物を作り出すか、使ってなくすか", "id": "t14"}, {"a": "単純", "aReading": "たんじゅん", "b": "複雑", "bReading": "ふくざつ", "note": "簡単なことか、入り組んでいることか", "id": "t15"}, {"a": "光明", "aReading": "こうみょう", "b": "暗黒", "bReading": "あんこく", "note": "明るい光か、真っ暗な闇かの違い", "id": "t16"}, {"a": "義務", "aReading": "ぎむ", "b": "権利", "bReading": "けんり", "note": "しなければならない事か、していい資格か", "id": "t17"}, {"a": "集合", "aReading": "しゅうごう", "b": "解散", "bReading": "かいさん", "note": "集まることか、散り散りになることか", "id": "t18"}, {"a": "偶然", "aReading": "ぐうぜん", "b": "必然", "bReading": "ひつぜん", "note": "たまたま起こるか、必ずそうなるか", "id": "t19"}, {"a": "成功", "aReading": "せいこう", "b": "失敗", "bReading": "しっぱい", "note": "うまくいくか、うまくいかないか", "id": "t20"}, {"a": "起点", "aReading": "きてん", "b": "終点", "bReading": "しゅうてん", "note": "始まりの場所か、終わりの場所か", "id": "t21"}, {"a": "勝利", "aReading": "しょうり", "b": "敗北", "bReading": "はいぼく", "note": "勝つことか、負けることかの違い", "id": "t22"}, {"a": "増加", "aReading": "ぞうか", "b": "減少", "bReading": "げんしょう", "note": "数が増えるか、数が減るかの違い", "id": "t23"}, {"a": "長所", "aReading": "ちょうしょ", "b": "短所", "bReading": "たんしょ", "note": "優れたよい点か、劣った悪い点か", "id": "t24"}, {"a": "円満", "aReading": "えんまん", "b": "不和", "bReading": "ふわ", "note": "仲がよいことか、仲が悪いことか", "id": "t25"}, {"a": "可決", "aReading": "かけつ", "b": "否決", "bReading": "ひけつ", "note": "賛成して決めるか、反対して決めないか", "id": "t26"}, {"a": "収入", "aReading": "しゅうにゅう", "b": "支出", "bReading": "ししゅつ", "note": "入ってくるお金か、出ていくお金か", "id": "t27"}, {"a": "差別", "aReading": "さべつ", "b": "平等", "bReading": "びょうどう", "note": "不公平に扱うか、みな同じに扱うか", "id": "t28"}, {"a": "平和", "aReading": "へいわ", "b": "戦争", "bReading": "せんそう", "note": "穏やかなことか、武力で争うことか", "id": "t29"}, {"a": "楽観", "aReading": "らっかん", "b": "悲観", "bReading": "ひかん", "note": "うまくいくと思うか、だめだと思うか", "id": "t30"}, {"a": "理想", "aReading": "りそう", "b": "現実", "bReading": "げんじつ", "note": "こうありたい姿か、実際にある姿か", "id": "t31"}, {"a": "革新", "aReading": "かくしん", "b": "保守", "bReading": "ほしゅ", "note": "新しく変えるか、今までを守るか", "id": "t32"}, {"a": "建設", "aReading": "けんせつ", "b": "破壊", "bReading": "はかい", "note": "作り上げることか、壊すことかの違い", "id": "t33"}, {"a": "公開", "aReading": "こうかい", "b": "秘密", "bReading": "ひみつ", "note": "みんなに知らせるか、隠しておくか", "id": "t34"}, {"a": "創造", "aReading": "そうぞう", "b": "模倣", "bReading": "もほう", "note": "新しく作り出すか、まねをするか", "id": "t35"}, {"a": "安心", "aReading": "あんしん", "b": "心配", "bReading": "しんぱい", "note": "気にかからないか、不安になるかの違い", "id": "t36"}, {"a": "供給", "aReading": "きょうきゅう", "b": "需要", "bReading": "じゅよう", "note": "物を与えるか、物を求めるかの違い", "id": "t37"}, {"a": "予習", "aReading": "よしゅう", "b": "復習", "bReading": "ふくしゅう", "note": "前もって学ぶか、あとで繰り返し学ぶか", "id": "t38"}, {"a": "感情", "aReading": "かんじょう", "b": "理性", "bReading": "りせい", "note": "気持ちの動きか、筋道立てて考える力か", "id": "t39"}, {"a": "自然", "aReading": "しぜん", "b": "人工", "bReading": "じんこう", "note": "人の手が入っていないか、人が作ったか", "id": "t40"}, {"a": "黒字", "aReading": "くろじ", "b": "赤字", "bReading": "あかじ", "note": "お金が余るか、お金が足りないかの違い", "id": "t41"}, {"a": "先祖", "aReading": "せんぞ", "b": "子孫", "bReading": "しそん", "note": "昔の血すじの人か、あとに続く人か", "id": "t42"}, {"a": "開始", "aReading": "かいし", "b": "終了", "bReading": "しゅうりょう", "note": "始まることか、終わることかの違い", "id": "t43"}, {"a": "正常", "aReading": "せいじょう", "b": "異常", "bReading": "いじょう", "note": "普通の状態か、普通とちがう状態か", "id": "t44"}, {"a": "温暖", "aReading": "おんだん", "b": "寒冷", "bReading": "かんれい", "note": "暖かいことか、寒くて冷たいことか", "id": "t45"}, {"a": "好調", "aReading": "こうちょう", "b": "不調", "bReading": "ふちょう", "note": "調子がよいか、調子が悪いかの違い", "id": "t46"}, {"a": "美点", "aReading": "びてん", "b": "欠点", "bReading": "けってん", "note": "優れたよい点か、足りない悪い点か", "id": "t47"}, {"a": "便利", "aReading": "べんり", "b": "不便", "bReading": "ふべん", "note": "都合がよいか、都合が悪いかの違い", "id": "t48"}, {"a": "静止", "aReading": "せいし", "b": "運動", "bReading": "うんどう", "note": "止まっていることか、動くことか", "id": "t49"}, {"a": "過失", "aReading": "かしつ", "b": "故意", "bReading": "こい", "note": "うっかりした失敗か、わざとしたことか", "id": "t50"}, {"a": "直接", "aReading": "ちょくせつ", "b": "間接", "bReading": "かんせつ", "note": "間に何もはさまないか、間に何かをはさむか", "id": "t51"}, {"a": "希望", "aReading": "きぼう", "b": "絶望", "bReading": "ぜつぼう", "note": "望みを持つか、望みを失うかの違い", "id": "t52"}, {"a": "客観", "aReading": "きゃっかん", "b": "主観", "bReading": "しゅかん", "note": "自分以外の立場で見るか、自分だけの見方か", "id": "t53"}, {"a": "形式", "aReading": "けいしき", "b": "内容", "bReading": "ないよう", "note": "外から見た形か、中に入っている中身か", "id": "t54"}, {"a": "辞任", "aReading": "じにん", "b": "就任", "bReading": "しゅうにん", "note": "役目をやめるか、役目に就くかの違い", "id": "t55"}, {"a": "精神", "aReading": "せいしん", "b": "肉体", "bReading": "にくたい", "note": "心のことか、体のことかの違い", "id": "t56"}, {"a": "部分", "aReading": "ぶぶん", "b": "全体", "bReading": "ぜんたい", "note": "一部分のことか、すべてのことか", "id": "t57"}, {"a": "縦断", "aReading": "じゅうだん", "b": "横断", "bReading": "おうだん", "note": "縦の向きに通るか、横の向きに通るか", "id": "t58"}, {"a": "具体", "aReading": "ぐたい", "b": "抽象", "bReading": "ちゅうしょう", "note": "はっきり形があるか、形のない考え方か", "id": "t59"}, {"a": "水平", "aReading": "すいへい", "b": "垂直", "bReading": "すいちょく", "note": "横にまっすぐか、縦にまっすぐかの違い", "id": "t60"}], "ruigigo": [{"a": "容易", "aReading": "ようい", "b": "簡単", "bReading": "かんたん", "note": "容易はたやすいこと、簡単は手間がかからないこと", "id": "r1"}, {"a": "好意", "aReading": "こうい", "b": "善意", "bReading": "ぜんい", "note": "好意は好きな気持ち、善意は人のためを思う心", "id": "r2"}, {"a": "原因", "aReading": "げんいん", "b": "要因", "bReading": "よういん", "note": "原因は結果を生んだこと、要因は影響する事情", "id": "r3"}, {"a": "用意", "aReading": "ようい", "b": "準備", "bReading": "じゅんび", "note": "用意は物をそろえること、準備は前もって整えること", "id": "r4"}, {"a": "消息", "aReading": "しょうそく", "b": "音信", "bReading": "いんしん", "note": "消息は様子の知らせ、音信は手紙などの連絡", "id": "r5"}, {"a": "方法", "aReading": "ほうほう", "b": "手段", "bReading": "しゅだん", "note": "方法はやり方、手段は目的のためのやり方", "id": "r6"}, {"a": "安全", "aReading": "あんぜん", "b": "無事", "bReading": "ぶじ", "note": "安全は危険がないこと、無事は何事もなく終わること", "id": "r7"}, {"a": "永遠", "aReading": "えいえん", "b": "永久", "bReading": "えいきゅう", "note": "永遠は限りなく続くこと、永久は変わらず続くこと", "id": "r8"}, {"a": "欠点", "aReading": "けってん", "b": "短所", "bReading": "たんしょ", "note": "欠点は足りない点、短所は性格などの弱い面", "id": "r9"}, {"a": "案外", "aReading": "あんがい", "b": "意外", "bReading": "いがい", "note": "案外は思ったより、意外は驚くほど違う様子", "id": "r10"}, {"a": "自然", "aReading": "しぜん", "b": "天然", "bReading": "てんねん", "note": "自然は人の手が入らない様子、天然は生まれつきのもの", "id": "r11"}, {"a": "原料", "aReading": "げんりょう", "b": "材料", "bReading": "ざいりょう", "note": "原料は加工前のもと、材料は製品のもとになるもの", "id": "r12"}, {"a": "公平", "aReading": "こうへい", "b": "平等", "bReading": "びょうどう", "note": "公平はかたよりなく扱うこと、平等はみな同じに扱うこと", "id": "r13"}, {"a": "体験", "aReading": "たいけん", "b": "経験", "bReading": "けいけん", "note": "体験は自分で経てみること、経験は積み重ねてきたこと", "id": "r14"}, {"a": "使命", "aReading": "しめい", "b": "任務", "bReading": "にんむ", "note": "使命は重大な役目、任務は果たすべき務め", "id": "r15"}, {"a": "辞職", "aReading": "じしょく", "b": "辞任", "bReading": "じにん", "note": "辞職は仕事を辞めること、辞任は役職を辞めること", "id": "r16"}, {"a": "美点", "aReading": "びてん", "b": "長所", "bReading": "ちょうしょ", "note": "美点はすぐれた良い点、長所は得意な面のこと", "id": "r17"}, {"a": "目標", "aReading": "もくひょう", "b": "目的", "bReading": "もくてき", "note": "目標は目指す具体的な地点、目的は成したいこと", "id": "r18"}, {"a": "返事", "aReading": "へんじ", "b": "応答", "bReading": "おうとう", "note": "返事は呼びかけに答えること、応答は問いに応じること", "id": "r19"}, {"a": "同意", "aReading": "どうい", "b": "賛成", "bReading": "さんせい", "note": "同意は考えを認めること、賛成はよいと支持すること", "id": "r20"}, {"a": "関心", "aReading": "かんしん", "b": "興味", "bReading": "きょうみ", "note": "関心は気にかけること、興味は面白いと感じる心", "id": "r21"}, {"a": "真心", "aReading": "まごころ", "b": "誠意", "bReading": "せいい", "note": "真心は偽りのない心、誠意はまじめな気持ち", "id": "r22"}, {"a": "改良", "aReading": "かいりょう", "b": "改善", "bReading": "かいぜん", "note": "改良は物を良く作り変えること、改善は状態を良くすること", "id": "r23"}, {"a": "発展", "aReading": "はってん", "b": "進展", "bReading": "しんてん", "note": "発展は勢いよく広がること、進展は先へ進むこと", "id": "r24"}, {"a": "苦労", "aReading": "くろう", "b": "苦心", "bReading": "くしん", "note": "苦労は大変な思いをすること、苦心は工夫して考え抜くこと", "id": "r25"}, {"a": "真実", "aReading": "しんじつ", "b": "真相", "bReading": "しんそう", "note": "真実はうそのない本当のこと、真相は隠れた事情", "id": "r26"}, {"a": "不安", "aReading": "ふあん", "b": "心配", "bReading": "しんぱい", "note": "不安は落ち着かない気持ち、心配は悪い事を気にかけること", "id": "r27"}, {"a": "進歩", "aReading": "しんぽ", "b": "向上", "bReading": "こうじょう", "note": "進歩は前より良く進むこと、向上は質が高まること", "id": "r28"}, {"a": "承知", "aReading": "しょうち", "b": "納得", "bReading": "なっとく", "note": "承知は頼みを聞き入れること、納得は理由がわかり認めること", "id": "r29"}, {"a": "主要", "aReading": "しゅよう", "b": "重要", "bReading": "じゅうよう", "note": "主要は中心となる主なもの、重要は大切で欠かせないもの", "id": "r30"}, {"a": "静養", "aReading": "せいよう", "b": "休養", "bReading": "きゅうよう", "note": "静養は静かに休み養うこと、休養は心身を休め養うこと", "id": "r31"}, {"a": "不平", "aReading": "ふへい", "b": "不満", "bReading": "ふまん", "note": "不平は不満を言葉に表すこと、不満は満足できない気持ち", "id": "r32"}], "homophoneGroups": [{"reading": "つとめる", "note": "「役割を果たす」→務める／「がんばる」→努める／「会社ではたらく」→勤める", "kanjiIds": ["k22", "k55", "k46"], "extra": []}, {"reading": "おさめる", "note": "「お金・物を渡す」→納める／「うまくまとめる・自分のものにする」→収める／「支配する・うまく整える」→治める", "kanjiIds": ["k13", "k207", "k284"], "extra": []}, {"reading": "そなえる", "note": "「神仏に品物をささげる」→供える／「準備しておく」→備える", "kanjiIds": ["k42", "k82"], "extra": []}, {"reading": "えいせい", "note": "「地球のまわりを回る天体・人工衛星」→衛星／「健康を守るための工夫」→衛生", "kanjiIds": ["k36"], "extra": [{"word": "衛生", "reading": "えいせい", "meaning": "病気を防ぎ、体をきれいで健康に保つための工夫のこと。", "example": "食事の前には手を洗い、衛生に気をつける。", "writingSentence": "食事の前は手を洗ってエイセイに気をつけよう。", "distractorReadings": ["えいしょう", "こうせい"], "altKanji": null}]}]};</script>
+<script>
+(function(){
+"use strict";
+
+/* ===================== data & constants ===================== */
+var DATA = null;
+var db = null;
+var PROGRESS = {}; // docId -> {items:{id:{a,c,last,ts}}}
+var PROGRESS_LOADED = {};
+
+var CATS = [
+  {key:'kanji', title:'漢字', short:'漢', desc:'読み方と意味をおぼえよう（書きは印刷でれんしゅう）', tag:'306語'},
+  {key:'kotowaza', title:'ことわざ・慣用句', short:'諺', desc:'意味を知って使い方をおぼえよう', tag:'150こ'},
+  {key:'yoji', title:'四字熟語', short:'熟', desc:'読み方と意味をおぼえよう', tag:'132こ'},
+  {key:'taigigo', title:'反対語・対義語', short:'反', desc:'反対の意味の言葉を選ぼう', tag:'60組'},
+  {key:'ruigigo', title:'類義語', short:'類', desc:'似た意味の言葉を選ぼう', tag:'32組'}
+];
+
+function listFor(catKey){
+  if(catKey==='kanji') return DATA.kanji;
+  if(catKey==='kotowaza') return DATA.kotowaza;
+  if(catKey==='yoji') return DATA.yoji;
+  if(catKey==='taigigo') return DATA.taigigo;
+  if(catKey==='ruigigo') return DATA.ruigigo;
+  return [];
+}
+function catMeta(key){ for(var i=0;i<CATS.length;i++) if(CATS[i].key===key) return CATS[i]; return null; }
+
+/* docId per learning mode */
+function docIdFor(catKey, sub){
+  if(catKey==='kanji') return 'kanji-'+(sub||'reading'); // reading | meaning | writing
+  return catKey;
+}
+
+/* ===================== utils ===================== */
+function $(sel,root){return (root||document).querySelector(sel);}
+function esc(s){ if(s==null) return ''; return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function sampleN(arr,n){ return shuffle(arr).slice(0, n); }
+function uid(){ return 'id'+Math.random().toString(36).slice(2,9); }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
+
+/* ===================== storage (db capability with localStorage fallback) ===================== */
+var LS_PREFIX = 'kotonoha_progress_';
+
+function loadProgressDoc(docId){
+  if(PROGRESS_LOADED[docId]) return Promise.resolve(PROGRESS[docId]);
+  PROGRESS_LOADED[docId]=true;
+  if(db){
+    return db.doc('progress/'+docId).get().then(function(snap){
+      PROGRESS[docId] = (snap.exists && snap.data() && snap.data().items) ? {items:snap.data().items} : {items:{}};
+      return PROGRESS[docId];
+    }).catch(function(){
+      PROGRESS[docId] = {items:{}};
+      return PROGRESS[docId];
+    });
+  } else {
+    try{
+      var raw = localStorage.getItem(LS_PREFIX+docId);
+      PROGRESS[docId] = raw ? JSON.parse(raw) : {items:{}};
+    }catch(e){ PROGRESS[docId] = {items:{}}; }
+    return Promise.resolve(PROGRESS[docId]);
+  }
+}
+
+function statFor(docId, itemId){
+  var p = PROGRESS[docId];
+  if(!p || !p.items || !p.items[itemId]) return {a:0,c:0,last:null,ts:0};
+  return p.items[itemId];
+}
+
+function recordResult(docId, itemId, correct){
+  if(!PROGRESS[docId]) PROGRESS[docId] = {items:{}};
+  var cur = PROGRESS[docId].items[itemId] || {a:0,c:0,last:null,ts:0};
+  cur = {a:cur.a+1, c:cur.c+(correct?1:0), last:correct?1:0, ts:Date.now()};
+  PROGRESS[docId].items[itemId] = cur;
+  persist(docId, itemId, cur);
+}
+
+var persistQueue = {};
+function persist(docId, itemId, cur){
+  if(db){
+    var patch = {items:{}};
+    patch.items[itemId] = cur;
+    db.doc('progress/'+docId).update(patch).catch(function(e){
+      // doc may not exist yet
+      db.doc('progress/'+docId).set(patch).catch(function(){});
+    });
+  } else {
+    try{ localStorage.setItem(LS_PREFIX+docId, JSON.stringify(PROGRESS[docId])); }catch(e){}
+  }
+}
+
+function logPrint(catKey, sub, ids){
+  // lightweight non-essential log; ignore failures
+  if(!db) return;
+  var docId = 'printlog';
+  db.doc('progress/'+docId).set({last:{cat:catKey,sub:sub||'', ts:Date.now(), count:ids.length}}).catch(function(){});
+}
+
+/* ===================== progress calc ===================== */
+function catAccuracy(catKey){
+  var items = listFor(catKey);
+  var docIds = catKey==='kanji' ? ['kanji-reading','kanji-meaning'] : [docIdFor(catKey)];
+  var seen=0, correct=0, attempted=0;
+  docIds.forEach(function(docId){
+    var p = PROGRESS[docId];
+    if(!p) return;
+    items.forEach(function(it){
+      var s = p.items[it.id];
+      if(s && s.a>0){ attempted++; seen+=s.a; correct+=s.c; }
+    });
+  });
+  return {attempted:attempted, total: items.length*docIds.length, pct: seen? Math.round(100*correct/seen):0};
+}
+
+function weakItems(catKey, sub, limit){
+  var items = listFor(catKey);
+  var docId = docIdFor(catKey, sub);
+  var p = PROGRESS[docId] || {items:{}};
+  var withStat = items.map(function(it){
+    var s = p.items[it.id];
+    return {item:it, stat:s||{a:0,c:0,last:null,ts:0}};
+  }).filter(function(x){ return x.stat.a>0; });
+  withStat.sort(function(a,b){
+    var pa = a.stat.c/a.stat.a, pb = b.stat.c/b.stat.a;
+    if(pa!==pb) return pa-pb;
+    return b.stat.ts-a.stat.ts;
+  });
+  return withStat.slice(0, limit||10);
+}
+
+/* selection strategy for quiz/print: 'all' | 'weak' | 'wrong' | 'random' */
+function selectItems(catKey, sub, strategy, count){
+  var items = listFor(catKey);
+  var docId = docIdFor(catKey, sub);
+  var p = PROGRESS[docId] || {items:{}};
+  function stat(it){ return p.items[it.id] || {a:0,c:0,last:null,ts:0}; }
+  var pool;
+  if(strategy==='wrong'){
+    pool = items.filter(function(it){ var s=stat(it); return s.a>0 && s.last===0; });
+  } else if(strategy==='weak'){
+    var wrongLast = items.filter(function(it){ var s=stat(it); return s.a>0 && s.last===0; });
+    var lowAcc = items.filter(function(it){ var s=stat(it); return s.a>0 && s.last===1 && (s.c/s.a)<0.7; });
+    var neverSeen = items.filter(function(it){ return stat(it).a===0; });
+    wrongLast.sort(function(a,b){ return stat(a).c/stat(a).a - stat(b).c/stat(b).a; });
+    lowAcc.sort(function(a,b){ return stat(a).c/stat(a).a - stat(b).c/stat(b).a; });
+    pool = wrongLast.concat(lowAcc).concat(shuffle(neverSeen));
+  } else if(strategy==='random'){
+    pool = shuffle(items);
+  } else { // all, in order
+    pool = items.slice();
+  }
+  if(count && count>0) pool = pool.slice(0, count);
+  return pool;
+}
+
+/* ===================== app state / routing ===================== */
+var state = { screen:'home' };
+
+function go(screen, params){
+  state = Object.assign({screen:screen}, params||{});
+  render();
+  window.scrollTo(0,0);
+}
+
+function render(){
+  var app = $('#app');
+  if(!DATA){ app.innerHTML = '<div style="padding:60px 0;text-align:center;color:var(--ink-soft)">読み込み中…</div>'; return; }
+  if(state.screen==='home') return renderHome(app);
+  if(state.screen==='category') return renderCategory(app);
+  if(state.screen==='study') return renderStudy(app);
+  if(state.screen==='quiz') return renderQuiz(app);
+  if(state.screen==='quizResult') return renderQuizResult(app);
+  if(state.screen==='print') return renderPrintConfig(app);
+  app.innerHTML='';
+}
+
+/* ===================== HOME ===================== */
+function renderHome(app){
+  var cards = CATS.map(function(c){
+    var acc = catAccuracy(c.key);
+    return '<div class="cat-card" data-action="openCategory" data-cat="'+c.key+'">'+
+      '<span class="tag">'+esc(c.tag)+'</span>'+
+      '<h3 class="mincho">'+esc(c.title)+'</h3>'+
+      '<p class="desc">'+esc(c.desc)+'</p>'+
+      '<div class="bar"><i style="width:'+acc.pct+'%"></i></div>'+
+      '<div class="stats"><span>正答率 '+acc.pct+'%</span><span>学習済み '+acc.attempted+'/'+acc.total+'</span></div>'+
+    '</div>';
+  }).join('');
+
+  app.innerHTML =
+    '<div class="topbar"><div class="brand"><span class="mark">ことのはノート</span><span class="sub">国語 学習アプリ</span></div></div>'+
+    '<div class="section-title">カテゴリを選ぶ</div>'+
+    '<div class="grid">'+cards+'</div>';
+
+  attachDelegation(app);
+}
+
+/* ===================== CATEGORY ===================== */
+function renderCategory(app){
+  var meta = catMeta(state.cat);
+  var isKanji = state.cat==='kanji';
+  var acc = catAccuracy(state.cat);
+
+  var modes = '';
+  if(isKanji){
+    modes =
+      modeBtn('study','reading','📖','読み方をおぼえる','フラッシュカードで読み方・意味を確認',true)+
+      modeBtn('quiz','reading','✏️','読みテスト','4択で読み方をテスト')+
+      modeBtn('quiz','meaning','💡','意味テスト','4択で意味をテスト')+
+      modeBtn('print','writing','🖨️','書き取りプリント','同音異義語もふくめて印刷して練習');
+  } else if(catKey_isPair(state.cat)){
+    modes =
+      modeBtn('study','pair','📖','ペアをおぼえる','フラッシュカードで確認',true)+
+      modeBtn('quiz','pair','✏️','選択テスト','あとから正しい言葉を選ぶ')+
+      modeBtn('print','pair','🖨️','プリント','書いて答える練習プリント');
+  } else {
+    modes =
+      modeBtn('study','meaning','📖','意味をおぼえる','フラッシュカードで確認',true)+
+      modeBtn('quiz','meaning','✏️','意味テスト','4択で意味をテスト')+
+      modeBtn('quiz','word','🔤','逆引きテスト','意味から言葉を選ぶ')+
+      modeBtn('print','meaning','🖨️','プリント','書いて答える練習プリント');
+  }
+
+  var weak = weakItems(state.cat, isKanji?'reading':(catKey_isPair(state.cat)?'pair':'meaning'), 8);
+  var weakHtml = weak.length ? weak.map(function(w){
+    var pct = Math.round(100*w.stat.c/w.stat.a);
+    var label = w.item.word || w.item.phrase || (w.item.a+' / '+w.item.b);
+    return '<div class="weak-row"><span class="w">'+esc(label)+'</span><span class="pct '+(pct>=70?'ok':'')+'">'+pct+'%（'+w.stat.a+'回中）</span></div>';
+  }).join('') : '<div style="color:var(--ink-soft);font-size:13px;">まだ苦手な問題はありません（テストをすると記録されます）</div>';
+
+  app.innerHTML =
+    '<div class="topbar"><div class="crumb"><button data-action="goHome">ホーム</button><span>›</span><span>'+esc(meta.title)+'</span></div></div>'+
+    '<div class="cat-header"><div><h2 class="mincho">'+esc(meta.title)+'</h2><div class="desc">'+esc(meta.desc)+'　全体正答率 '+acc.pct+'%</div></div></div>'+
+    '<div class="modebar">'+modes+'</div>'+
+    '<div class="section-title">苦手な問題</div>'+
+    '<div class="weak-list">'+weakHtml+'</div>';
+
+  attachDelegation(app);
+}
+function catKey_isPair(key){ return key==='taigigo' || key==='ruigigo'; }
+function modeBtn(screen, sub, ico, title, desc, primary){
+  return '<button class="mode-btn'+(primary?' primary':'')+'" data-action="enterMode" data-screen="'+screen+'" data-sub="'+sub+'">'+
+    '<span class="ico">'+ico+'</span><b>'+esc(title)+'</b><span>'+esc(desc)+'</span></button>';
+}
+
+/* label helpers per item shape */
+function itemLabel(cat, it){
+  if(cat==='kanji') return it.word;
+  if(cat==='kotowaza' || cat==='yoji') return it.phrase;
+  return it.a+' / '+it.b;
+}
+
+/* ===================== STUDY (flashcards) ===================== */
+function studyList(){
+  var strategy = state.filter || 'all';
+  return selectItems(state.cat, state.sub, strategy, 0);
+}
+function renderStudy(app){
+  var meta = catMeta(state.cat);
+  var list = state._studyList || (state._studyList = studyList());
+  if(list.length===0){
+    app.innerHTML = topbarHtml(meta,'覚える')+ '<div class="form-block">この条件の問題はまだありません。フィルターを変えてみてください。</div>'+filterRow();
+    attachDelegation(app); return;
+  }
+  var idx = Math.min(state.idx||0, list.length-1);
+  var it = list[idx];
+  var front, back;
+  if(state.cat==='kanji'){
+    var frontLabel = state.sub==='meaning' ? it.word : it.word;
+    front = '<div class="kw">'+esc(frontLabel)+'</div>';
+    back = '<div class="yomi">'+esc(it.reading)+'</div><div class="meaning">'+esc(it.meaning)+'</div>'+(it.example?'<div class="example">'+esc(it.example)+'</div>':'')+(it.altKanji?'<div class="example">「'+esc(it.altKanji)+'」と書くこともあります</div>':'');
+  } else if(state.cat==='kotowaza' || state.cat==='yoji'){
+    front = '<div class="kw" style="font-size:'+(it.phrase.length>6?'30px':'40px')+'">'+esc(it.phrase)+'</div>';
+    back = (it.reading?'<div class="yomi">'+esc(it.reading)+'</div>':'')+'<div class="meaning">'+esc(it.meaning)+'</div>'+(it.example?'<div class="example">'+esc(it.example)+'</div>':'');
+  } else {
+    front = '<div class="pairword mincho">'+esc(it.a)+'</div><div class="hint" style="position:static;">'+esc(it.aReading||'')+'</div>';
+    back = '<div class="arrow">⇕</div><div class="pairword mincho">'+esc(it.b)+'</div><div class="hint" style="position:static;">'+esc(it.bReading||'')+'</div>'+(it.note?'<div class="meaning" style="margin-top:8px;">'+esc(it.note)+'</div>':'');
+  }
+
+  app.innerHTML = topbarHtml(meta,'覚える')+
+    '<div class="study-wrap">'+
+      '<div class="progress-row"><span>'+(idx+1)+' / '+list.length+'</span><div class="bar"><i style="width:'+Math.round(100*(idx+1)/list.length)+'%"></i></div></div>'+
+      '<div class="flip-card" data-action="flip"><div class="flip-inner">'+
+        '<div class="face front"><span class="cat-tag">タップして裏返す</span>'+front+'</div>'+
+        '<div class="face back">'+back+'</div>'+
+      '</div></div>'+
+      '<div class="study-controls">'+
+        '<button class="icon-btn" data-action="studyPrev">← 前</button>'+
+        '<button class="icon-btn accent" data-action="studyFlip">裏返す</button>'+
+        '<button class="icon-btn" data-action="studyNext">次 →</button>'+
+      '</div>'+
+      filterRow()+
+    '</div>';
+
+  if(state.flipped){ var fc = app.querySelector('.flip-card'); if(fc) fc.classList.add('flipped'); }
+  attachDelegation(app);
+}
+function filterRow(){
+  var f = state.filter||'all';
+  function opt(v,l){ return '<option value="'+v+'"'+(f===v?' selected':'')+'>'+l+'</option>'; }
+  return '<div class="study-controls"><select class="filter-select" data-action="studyFilter">'+
+    opt('all','すべて')+opt('weak','苦手優先')+opt('wrong','間違えたものだけ')+opt('random','ランダム')+
+  '</select></div>';
+}
+function topbarHtml(meta, modeName){
+  return '<div class="topbar"><div class="crumb"><button data-action="goHome">ホーム</button><span>›</span><button data-action="backToCategory">'+esc(meta.title)+'</button><span>›</span><span>'+esc(modeName)+'</span></div></div>';
+}
+
+/* ===================== QUIZ ===================== */
+function poolTexts(arr, field){ return arr.map(function(x){return x[field];}); }
+function buildChoices(correctText, curated, pool, need){
+  need = need||4;
+  var set=[correctText];
+  (curated||[]).forEach(function(w){ if(set.indexOf(w)===-1) set.push(w); });
+  var extra = shuffle((pool||[]).filter(function(t){ return set.indexOf(t)===-1; }));
+  var i=0;
+  while(set.length<need && i<extra.length){ set.push(extra[i]); i++; }
+  return shuffle(set);
+}
+function underlineHtml(sentence, word){
+  if(!sentence){ return '<div class="stem-word mincho">'+esc(word)+'</div>'; }
+  var idx = sentence.indexOf(word);
+  if(idx===-1){ return '<div>'+esc(sentence)+'</div><div class="stem-word mincho">'+esc(word)+'</div>'; }
+  var before=sentence.slice(0,idx), mid=sentence.slice(idx,idx+word.length), after=sentence.slice(idx+word.length);
+  return '<div>'+esc(before)+'<u class="target">'+esc(mid)+'</u>'+esc(after)+'</div>';
+}
+
+function buildQuizQuestion(cat, sub, it){
+  var q = {itemId: it.id};
+  if(cat==='kanji' && sub==='reading'){
+    q.instr = '次の――線の漢字の読み方を、ひらがなで答えなさい。';
+    q.mainHtml = underlineHtml(it.example, it.word);
+    q.correct = it.reading;
+    q.choices = buildChoices(it.reading, it.distractorReadings, poolTexts(DATA.kanji,'reading'));
+  } else if(cat==='kanji' && sub==='meaning'){
+    q.instr = '――線の言葉の意味として最も適切なものを、次から選びなさい。';
+    q.mainHtml = underlineHtml(it.example, it.word);
+    q.correct = it.meaning;
+    q.choices = buildChoices(it.meaning, [], poolTexts(DATA.kanji,'meaning'));
+  } else if((cat==='kotowaza'||cat==='yoji') && sub==='meaning'){
+    q.instr = '次の'+(cat==='kotowaza'?'ことわざ・慣用句':'四字熟語')+'の意味として最も適切なものを選びなさい。';
+    q.mainHtml = '<div class="stem-word mincho">'+esc(it.phrase)+'</div>';
+    q.correct = it.meaning;
+    q.choices = buildChoices(it.meaning, it.distractorMeanings, poolTexts(listFor(cat),'meaning'));
+  } else if((cat==='kotowaza'||cat==='yoji') && sub==='word'){
+    q.instr = '次の意味を表す言葉として最も適切なものを選びなさい。';
+    q.mainHtml = '<div style="font-size:17px;line-height:1.8">'+esc(it.meaning)+'</div>';
+    q.correct = it.phrase;
+    q.choices = buildChoices(it.phrase, [], poolTexts(listFor(cat),'phrase'));
+  } else if(cat==='taigigo' || cat==='ruigigo'){
+    var dir = Math.random()<0.5;
+    var promptWord = dir ? it.a : it.b;
+    var correct = dir ? it.b : it.a;
+    var pool = poolTexts(listFor(cat), dir?'b':'a');
+    q.instr = cat==='taigigo' ? '次の言葉の反対の意味を表す言葉を、あとから選びなさい。' : '次の言葉と意味が似ている言葉を、あとから選びなさい。';
+    q.mainHtml = '<div class="stem-word mincho">'+esc(promptWord)+'</div>';
+    q.correct = correct;
+    q.choices = buildChoices(correct, [], pool);
+  }
+  return q;
+}
+
+function renderQuiz(app){
+  var meta = catMeta(state.cat);
+  if(!state.phase) state.phase='setup';
+  if(state.phase==='setup') return renderQuizSetup(app, meta);
+  return renderQuizRunning(app, meta);
+}
+function renderQuizSetup(app, meta){
+  var strat = state.strategy || 'weak';
+  var count = state.count || 15;
+  function opt(v,l){ return '<div class="opt'+(strat===v?' sel':'')+'" data-action="setStrategy" data-v="'+v+'">'+l+'</div>'; }
+  app.innerHTML = topbarHtml(meta,'テスト設定')+
+    '<div class="form-block"><h4>出題の範囲</h4><div class="opt-row">'+
+      opt('weak','苦手優先')+opt('wrong','間違えたものだけ')+opt('random','ランダム')+opt('all','最初から順番に')+
+    '</div></div>'+
+    '<div class="form-block"><h4>問題数</h4><div class="count-row"><input type="range" min="5" max="40" step="5" value="'+count+'" data-action="setCount"><span class="tabular" style="min-width:48px;text-align:right;">'+count+'問</span></div></div>'+
+    '<button class="icon-btn accent big" data-action="startQuiz">テストを始める</button>';
+  attachDelegation(app);
+}
+function renderQuizRunning(app, meta){
+  var queue = state.queue, idx = state.qidx||0;
+  var q = queue[idx];
+  var answered = state.answeredIdx===idx;
+  var choicesHtml = q.choices.map(function(c){
+    var cls='choice';
+    if(answered){
+      if(c===q.correct) cls+=' correct';
+      else if(c===state.selected) cls+=' wrong';
+    }
+    return '<button class="'+cls+'" '+(answered?'disabled':'')+' data-action="answer" data-v="'+encodeURIComponent(c)+'">'+esc(c)+'</button>';
+  }).join('');
+  app.innerHTML = topbarHtml(meta,'テスト')+
+    '<div class="quiz-wrap">'+
+      '<div class="quiz-top"><span>'+(idx+1)+' / '+queue.length+'</span><span class="score-chip">正解 '+state.score+'</span></div>'+
+      '<div class="stem-card"><div class="stem-instr">'+esc(q.instr)+'</div><div class="stem-main">'+q.mainHtml+'</div></div>'+
+      '<div class="choices">'+choicesHtml+'</div>'+
+      '<div class="feedback-row"><button class="icon-btn accent next-btn'+(answered?' show':'')+'" data-action="nextQuestion">'+(idx+1<queue.length?'次の問題 →':'結果を見る →')+'</button></div>'+
+    '</div>';
+  attachDelegation(app);
+}
+
+function renderQuizResult(app){
+  var meta = catMeta(state.cat);
+  var pct = state.queue.length ? Math.round(100*state.score/state.queue.length) : 0;
+  var missHtml = state.wrongItems.length ? state.wrongItems.map(function(w){
+    return '<div class="miss-row"><span>'+esc(w.label)+'</span><span>正解: '+esc(w.correct)+'</span></div>';
+  }).join('') : '<div style="font-size:13px;color:var(--ink-soft)">全問正解でした！</div>';
+  app.innerHTML = topbarHtml(meta,'結果')+
+    '<div class="result-card">'+
+      '<div style="font-size:13px;color:var(--ink-soft);">今回の結果</div>'+
+      '<div class="big tabular">'+state.score+' / '+state.queue.length+'</div>'+
+      '<div style="color:var(--ink-soft);">正答率 '+pct+'%</div>'+
+      '<div class="miss-list">'+missHtml+'</div>'+
+      '<div class="study-controls" style="margin-top:22px;">'+
+        '<button class="icon-btn accent" data-action="retryQuiz">もう一度</button>'+
+        '<button class="icon-btn" data-action="backToCategory">カテゴリに戻る</button>'+
+      '</div>'+
+    '</div>';
+  attachDelegation(app);
+}
+
+/* ===================== PRINT ===================== */
+var PRINT_LABELS = {
+  kanji: {writing:'書き取りプリント'},
+  kotowaza:{meaning:'ことわざ・慣用句プリント'}, yoji:{meaning:'四字熟語プリント'},
+  taigigo:{pair:'反対語プリント'}, ruigigo:{pair:'類義語プリント'}
+};
+function renderPrintConfig(app){
+  var meta = catMeta(state.cat);
+  var strat = state.strategy || 'random';
+  var total = listFor(state.cat).length;
+  var count = state.count || Math.min(15,total);
+  function opt(v,l){ return '<div class="opt'+(strat===v?' sel':'')+'" data-action="setPStrategy" data-v="'+v+'">'+l+'</div>'; }
+  var queue = selectItems(state.cat, state.sub, strat, count);
+  var previewHtml = queue.map(function(it){ return '<div>'+esc(itemLabel(state.cat,it))+'</div>'; }).join('') || '<div>該当する問題がありません</div>';
+
+  var homophoneNote = '';
+  if(state.cat==='kanji' && state.sub==='writing'){
+    var readingsInQueue = {};
+    queue.forEach(function(it){ readingsInQueue[it.reading]=true; });
+    var matched = DATA.homophoneGroups.filter(function(g){ return readingsInQueue[g.reading]; });
+    if(matched.length){
+      homophoneNote = '<div class="homophone-note">同音異義語まとめが含まれます: '+matched.map(function(g){return esc(g.reading)+'（'+esc(g.note)+'）';}).join(' / ')+'</div>';
+    }
+  }
+
+  app.innerHTML = topbarHtml(meta,'印刷')+
+    '<div class="form-block"><h4>プリントの内容</h4><div style="font-size:14px;">'+esc((PRINT_LABELS[state.cat]||{})[state.sub]||'プリント')+'</div></div>'+
+    '<div class="form-block"><h4>出題の範囲</h4><div class="opt-row">'+
+      opt('weak','苦手優先')+opt('wrong','間違えたものだけ')+opt('random','ランダム')+opt('all','最初から順番に')+
+    '</div></div>'+
+    '<div class="form-block"><h4>問題数</h4><div class="count-row"><input type="range" min="5" max="'+Math.max(5,Math.min(40,total))+'" step="5" value="'+count+'" data-action="setPCount"><span class="tabular" style="min-width:48px;text-align:right;">'+count+'問</span></div></div>'+
+    '<div class="form-block"><h4>プレビュー（'+queue.length+'問）</h4><div class="preview-list">'+previewHtml+'</div>'+homophoneNote+'</div>'+
+    '<button class="icon-btn accent big" data-action="doPrint">印刷する</button>';
+  attachDelegation(app);
+}
+
+function buildPrintHtml(cat, sub, queue){
+  var meta = catMeta(cat);
+  var title = ((PRINT_LABELS[cat]||{})[sub]) || (meta.title+'プリント');
+  var qHtml='', ansHtml='';
+  queue.forEach(function(it, i){
+    var n = i+1;
+    if(cat==='kanji' && sub==='writing'){
+      var sentence = it.writingSentence || (it.reading+'　の　文');
+      var kataWord = null;
+      // try to find the katakana run in the sentence for underline styling: fallback none
+      qHtml += '<div class="p-q"><span class="num">'+n+'.</span>'+esc(sentence)+'　→　<span class="blank">&nbsp;</span></div>';
+      ansHtml += '<div>'+n+'. '+esc(it.word)+'（'+esc(it.reading)+'）</div>';
+    } else if(cat==='kotowaza' || cat==='yoji'){
+      qHtml += '<div class="p-q"><span class="num">'+n+'.</span>「'+esc(it.phrase)+'」の意味を書きなさい。　→　<span class="blank" style="min-width:220px;">&nbsp;</span></div>';
+      ansHtml += '<div>'+n+'. '+esc(it.phrase)+'：'+esc(it.meaning)+'</div>';
+    } else { // pair
+      var qLabel = cat==='taigigo' ? '反対の意味の言葉' : '似た意味の言葉';
+      qHtml += '<div class="p-q"><span class="num">'+n+'.</span>「'+esc(it.a)+'」の'+qLabel+'を書きなさい。　→　<span class="blank">&nbsp;</span></div>';
+      ansHtml += '<div>'+n+'. '+esc(it.a)+' → '+esc(it.b)+'</div>';
+    }
+  });
+
+  var homophoneBlock='';
+  if(cat==='kanji' && sub==='writing'){
+    var readingsInQueue = {};
+    queue.forEach(function(it){ readingsInQueue[it.reading]=true; });
+    var matched = DATA.homophoneGroups.filter(function(g){ return readingsInQueue[g.reading]; });
+    if(matched.length){
+      homophoneBlock = matched.map(function(g){ return '<div class="p-hgroup"><b>同音異義語まとめ「'+esc(g.reading)+'」</b><br>'+esc(g.note)+'</div>'; }).join('');
+    }
+  }
+
+  var html =
+    '<div class="p-page">'+
+      '<div class="p-head"><h2>'+esc(title)+'</h2><div class="p-namebox">日付<span class="line"></span>　名前<span class="line"></span></div></div>'+
+      qHtml + homophoneBlock +
+    '</div>'+
+    '<div class="p-page">'+
+      '<div class="p-title-answers">解答：'+esc(title)+'</div>'+
+      '<div class="p-answers">'+ansHtml+'</div>'+
+    '</div>';
+  return html;
+}
+
+/* ===================== GRADE (self-check after printing) ===================== */
+function renderGrade(app){
+  var meta = catMeta(state.cat);
+  var queue = state.queue;
+  var marks = state.marks || (state.marks = {});
+  var rows = queue.map(function(it,i){
+    var ans = state.cat==='kanji' ? it.word+'（'+it.reading+'）' : (state.cat==='kotowaza'||state.cat==='yoji') ? it.phrase+'：'+it.meaning : it.a+' → '+it.b;
+    var m = marks[it.id];
+    return '<div class="weak-row"><span class="w">'+(i+1)+'. '+esc(ans)+'</span><span>'+
+      '<button class="icon-btn'+(m===1?' good':'')+'" style="padding:6px 12px;margin-right:6px;" data-action="markItem" data-id="'+it.id+'" data-v="1">◯</button>'+
+      '<button class="icon-btn'+(m===0?' accent':'')+'" style="padding:6px 12px;" data-action="markItem" data-id="'+it.id+'" data-v="0">✕</button>'+
+    '</span></div>';
+  }).join('');
+  app.innerHTML = topbarHtml(meta,'採点')+
+    '<div class="form-block"><h4>印刷した問題の答え合わせをして、○✕をおしてね</h4></div>'+
+    '<div class="weak-list">'+rows+'</div>'+
+    '<div class="study-controls" style="margin-top:20px;"><button class="icon-btn accent big" data-action="saveGrade">記録してもどる</button></div>';
+  attachDelegation(app);
+}
+
+/* ===================== event delegation ===================== */
+function attachDelegation(app){ /* no-op: single global listener handles everything */ }
+
+document.addEventListener('click', function(e){
+  var el = e.target.closest('[data-action]');
+  if(!el) return;
+  var action = el.dataset.action;
+
+  if(action==='openCategory'){ go('category', {cat: el.dataset.cat}); return; }
+  if(action==='goHome'){ go('home'); return; }
+  if(action==='backToCategory'){ go('category', {cat: state.cat}); return; }
+
+  if(action==='enterMode'){
+    var screen = el.dataset.screen, sub = el.dataset.sub;
+    if(screen==='study'){ go('study', {cat:state.cat, sub:sub, idx:0, filter:'all'}); }
+    else if(screen==='quiz'){ go('quiz', {cat:state.cat, sub:sub, phase:'setup'}); }
+    else if(screen==='print'){ go('print', {cat:state.cat, sub:sub}); }
+    return;
+  }
+
+  /* study */
+  if(action==='flip' || action==='studyFlip'){
+    state.flipped = !state.flipped;
+    var fc = document.querySelector('.flip-card');
+    if(fc) fc.classList.toggle('flipped', state.flipped);
+    return;
+  }
+  if(action==='studyPrev'){
+    state.idx = Math.max(0,(state.idx||0)-1); state.flipped=false; render(); return;
+  }
+  if(action==='studyNext'){
+    var list = state._studyList||[];
+    state.idx = Math.min(list.length-1,(state.idx||0)+1); state.flipped=false; render(); return;
+  }
+
+  /* quiz setup */
+  if(action==='setStrategy'){ state.strategy = el.dataset.v; render(); return; }
+  if(action==='startQuiz'){
+    var queue = selectItems(state.cat, state.sub, state.strategy||'weak', state.count||15);
+    if(queue.length===0){ alert('対象の問題がありません。範囲を変えてみてください。'); return; }
+    var built = queue.map(function(it){ return Object.assign({raw:it}, buildQuizQuestion(state.cat, state.sub, it)); });
+    state.queue = built; state.qidx=0; state.score=0; state.wrongItems=[]; state.phase='running'; state.answeredIdx=-1;
+    render(); return;
+  }
+  if(action==='retryQuiz'){ go('quiz', {cat:state.cat, sub:state.sub, phase:'setup', strategy:state.strategy, count:state.count}); return; }
+
+  /* quiz running */
+  if(action==='answer'){
+    if(state.answeredIdx===state.qidx) return;
+    var val = decodeURIComponent(el.dataset.v);
+    var q = state.queue[state.qidx];
+    var correct = (val===q.correct);
+    state.selected = val;
+    state.answeredIdx = state.qidx;
+    if(correct) state.score++;
+    else state.wrongItems.push({label: itemLabel(state.cat, q.raw), correct:q.correct});
+    var docId = docIdFor(state.cat, state.sub==='word'?'meaning':state.sub); // reverse-mode counts toward same stat bucket
+    recordResult(docId, q.itemId, correct);
+    render(); return;
+  }
+  if(action==='nextQuestion'){
+    if(state.qidx+1>=state.queue.length){ go('quizResult', state); }
+    else { state.qidx++; state.answeredIdx=-1; state.selected=null; render(); }
+    return;
+  }
+
+  /* print */
+  if(action==='setPStrategy'){ state.strategy = el.dataset.v; render(); return; }
+  if(action==='doPrint'){
+    var pqueue = selectItems(state.cat, state.sub, state.strategy||'random', state.count||15);
+    if(pqueue.length===0){ alert('対象の問題がありません。範囲を変えてみてください。'); return; }
+    document.getElementById('printArea').innerHTML = buildPrintHtml(state.cat, state.sub, pqueue);
+    logPrint(state.cat, state.sub, pqueue);
+    go('grade', {cat:state.cat, sub:state.sub, queue:pqueue, marks:{}});
+    setTimeout(function(){ window.print(); }, 200);
+    return;
+  }
+
+  /* grade */
+  if(action==='markItem'){
+    var id = el.dataset.id, v = parseInt(el.dataset.v,10);
+    state.marks[id]=v; render(); return;
+  }
+  if(action==='saveGrade'){
+    var docId2 = docIdFor(state.cat, state.sub);
+    Object.keys(state.marks||{}).forEach(function(id){ recordResult(docId2, id, state.marks[id]===1); });
+    go('category', {cat:state.cat}); return;
+  }
+});
+
+document.addEventListener('input', function(e){
+  if(e.target.dataset && e.target.dataset.action==='setCount'){ state.count = parseInt(e.target.value,10); render(); }
+  if(e.target.dataset && e.target.dataset.action==='setPCount'){ state.count = parseInt(e.target.value,10); render(); }
+});
+document.addEventListener('change', function(e){
+  if(e.target.dataset && e.target.dataset.action==='studyFilter'){ state.filter = e.target.value; state.idx=0; state._studyList=null; render(); }
+});
+
+/* patch render() to add print/grade screens */
+var _origRender = render;
+render = function(){
+  var app = $('#app');
+  if(!DATA){ app.innerHTML = '<div style="padding:60px 0;text-align:center;color:var(--ink-soft)">読み込み中…</div>'; return; }
+  if(state.screen==='home') return renderHome(app);
+  if(state.screen==='category') return renderCategory(app);
+  if(state.screen==='study') return renderStudy(app);
+  if(state.screen==='quiz') return renderQuiz(app);
+  if(state.screen==='quizResult') return renderQuizResult(app);
+  if(state.screen==='print') return renderPrintConfig(app);
+  if(state.screen==='grade') return renderGrade(app);
+  app.innerHTML='';
+};
+
+/* ===================== boot ===================== */
+var _booted = false;
+function boot(){
+  if(_booted) return; _booted = true;
+  var docIds = ['kanji-reading','kanji-meaning','kanji-writing','kotowaza','yoji','taigigo','ruigigo'];
+  function ready(d){
+    DATA = d;
+    Promise.all(docIds.map(loadProgressDoc)).then(function(){ render(); });
+    render();
+  }
+  function fail(){
+    $('#app').innerHTML = '<div style="padding:60px 0;text-align:center;color:var(--bad)">データの読み込みに失敗しました。ページを再読み込みしてください。</div>';
+  }
+  if(window.__KOTONOHA_DATA__){
+    ready(window.__KOTONOHA_DATA__);
+    return;
+  }
+  fetch('data.json').then(function(r){return r.json();}).then(ready).catch(fail);
+}
+
+if(window.claude && window.claude.use){
+  window.claude.use('db').then(function(d){ db=d; boot(); }).catch(function(){ boot(); });
+  setTimeout(function(){ if(!DATA) boot(); }, 1200);
+} else {
+  boot();
+}
+
+})();
+</script>
